@@ -26,6 +26,9 @@ jobs:
           node-version: 18
           cache: 'pnpm'
 
+      - name: Disable husky
+        run: npm pkg delete scripts.prepare
+
       - name: Install dependencies
         run: pnpm install
 
