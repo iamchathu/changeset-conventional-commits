@@ -1,6 +1,6 @@
 {
   "name": "changeset-conventional-commits",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Generate Changesets from conventional commits",
   "homepage": "http://github.com/iamchathu/changeset-conventional-commits",
   "main": "bin/index.js",
