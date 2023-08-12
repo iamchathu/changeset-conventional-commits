@@ -12,6 +12,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      issues: read
 
     name: Release
     runs-on: ubuntu-latest
@@ -43,7 +44,7 @@ jobs:
         uses: changesets/action@v1
         with:
           commit: 'chore: version package'
-          version: pnpm update:versions
+          version: pnpm ci:version
           publish: pnpm changeset publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
