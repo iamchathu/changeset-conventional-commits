@@ -1,5 +1,11 @@
 # changeset-conventional-commits
 
+## 0.0.2
+
+### Patch Changes
+
+- [#4](https://github.com/iamchathu/changeset-conventional-commits/pull/4) [`96ea044`](https://github.com/iamchathu/changeset-conventional-commits/commit/96ea044db4e1f5da03a90f3842db374eb9badace) Thanks [@iamchathu](https://github.com/iamchathu)! - fix: :bug: fix issue with sh bang
+
 ## 0.0.1
 
 ### Patch Changes
