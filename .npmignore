@@ -1,1 +1,14 @@
 src/
+.vscode/
+.github/
+.changeset/
+.husky/
+.eslintignore
+.eslintrc
+.lintstagedrc
+.prettierignore
+.prettierrc
+.swcrc
+*.config.*
+tsconfig*
+tsup*
