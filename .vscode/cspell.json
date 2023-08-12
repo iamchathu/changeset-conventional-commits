@@ -4,7 +4,7 @@
   // language - current active spelling language
   "language": "en",
   // words - list of words to be always considered correct
-  "words": ["changesets", "cobertura", "codecov", "manypkg", "pnpm"],
+  "words": ["changesets", "cobertura", "codecov", "iamchathu", "manypkg", "pnpm"],
   "enabledLanguageIds": [
     "css",
     "graphql",
