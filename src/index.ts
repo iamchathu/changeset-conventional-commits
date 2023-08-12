@@ -1,4 +1,4 @@
-#!/bin/env node
+#! /usr/bin/env node
 import writeChangeset from '@changesets/write';
 import { getPackagesSync } from '@manypkg/get-packages';
 import { execSync } from 'child_process';
