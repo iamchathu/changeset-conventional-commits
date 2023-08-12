@@ -162,7 +162,7 @@ describe('associate-commits-to-conventional-commit-messages', () => {
 
 describe('get-repo-root', () => {
   it('correctly gets the repo root', () => {
-    expect(getRepoRoot().endsWith('mono-repo-tools')).toBe(true);
+    expect(getRepoRoot().endsWith('changeset-conventional-commits')).toBe(true);
   });
 });
 
