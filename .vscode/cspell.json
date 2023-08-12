@@ -1,0 +1,27 @@
+{
+  // Version of the setting file.  Always 0.2
+  "version": "0.2",
+  // language - current active spelling language
+  "language": "en",
+  // words - list of words to be always considered correct
+  "words": ["changesets", "cobertura", "codecov", "manypkg", "pnpm"],
+  "enabledLanguageIds": [
+    "css",
+    "graphql",
+    "html",
+    "javascript",
+    "javascriptreact",
+    "json",
+    "jsonc",
+    "markdown",
+    "plaintext",
+    "text",
+    "typescript",
+    "typescriptreact",
+    "yaml",
+    "yml",
+    "ignore",
+    "dockerfile"
+  ],
+  "ignorePaths": ["node_modules", "package.json", "*-lock.*", "tsconfig.*", "dist/", ".vscode/extensions.json"]
+}

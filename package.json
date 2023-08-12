@@ -1,0 +1,63 @@
+{
+  "name": "changeset-conventional-commits",
+  "version": "0.0.0",
+  "description": "Generate Changesets from conventional commits",
+  "homepage": "http://github.com/iamchathu/changeset-conventional-commits",
+  "main": "bin/index.js",
+  "keywords": [
+    "changesets",
+    "changeset",
+    "conventional commits"
+  ],
+  "files": [
+    "/bin"
+  ],
+  "bin": {
+    "changeset-conventional": "./bin/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iamchathu/changeset-conventional-commits.git"
+  },
+  "bugs": {
+    "url": "https://github.com/iamchathu/changeset-conventional-commits/issues"
+  },
+  "author": {
+    "name": "Chathu Vishawjith",
+    "url": "https://chathu.me/"
+  },
+  "license": "MIT",
+  "scripts": {
+    "type-check": "tsc -p tsconfig.json",
+    "build": "tsup",
+    "test": "jest",
+    "lint": "eslint 'src/**/*.{ts,tsx}' --quiet --fix",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+    "@changesets/types": "^5.2.1",
+    "@changesets/write": "^0.2.3",
+    "@manypkg/get-packages": "^2.2.0",
+    "chalk": "^5.3.0",
+    "figlet": "^1.6.0"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.6.2",
+    "@swc/jest": "^0.2.29",
+    "@types/node": "^20.4.10",
+    "@typescript-eslint/eslint-plugin": "^6.3.0",
+    "@typescript-eslint/parser": "^6.3.0",
+    "eslint": "^8.47.0",
+    "eslint-config-prettier": "^9.0.0",
+    "husky": "^8.0.0",
+    "jest": "^29.6.2",
+    "lint-staged": "^13.2.3",
+    "prettier": "^3.0.1",
+    "ts-node-dev": "^2.0.0",
+    "tsup": "^7.2.0",
+    "typescript": "^5.1.6"
+  },
+  "volta": {
+    "node": "18.17.1"
+  }
+}

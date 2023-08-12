@@ -1,0 +1,10 @@
+{
+  "printWidth": 120,
+  "singleQuote": true,
+  "overrides": [
+    {
+      "files": [".prettierrc", ".lintstagedrc"],
+      "options": { "parser": "json" }
+    }
+  ]
+}
