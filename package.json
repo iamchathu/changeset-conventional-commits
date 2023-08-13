@@ -33,6 +33,7 @@
     "test": "jest",
     "lint": "eslint 'src/**/*.{ts,tsx}' --quiet --fix",
     "ci:version": "changeset version && pnpm install --lockfile-only",
+    "ci:publish": "changeset publish && git push --follow-tags",
     "prepare": "husky install"
   },
   "dependencies": {
