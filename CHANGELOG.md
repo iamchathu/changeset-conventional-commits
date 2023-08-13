@@ -1,5 +1,11 @@
 # changeset-conventional-commits
 
+## 0.1.1
+
+### Patch Changes
+
+- [#8](https://github.com/iamchathu/changeset-conventional-commits/pull/8) [`0c38ab6`](https://github.com/iamchathu/changeset-conventional-commits/commit/0c38ab618353e35fa8fe616a372be8a27ff7b345) Thanks [@iamchathu](https://github.com/iamchathu)! - fix: :bug: release section missing in changesets
+
 ## 0.1.0
 
 ### Minor Changes
