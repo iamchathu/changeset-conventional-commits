@@ -1,5 +1,11 @@
 # changeset-conventional-commits
 
+## 0.2.0
+
+### Minor Changes
+
+- [#10](https://github.com/iamchathu/changeset-conventional-commits/pull/10) [`0fa4c0b`](https://github.com/iamchathu/changeset-conventional-commits/commit/0fa4c0b1d74e9ac3b17419dc0b2c77a74bbe4f98) Thanks [@iamchathu](https://github.com/iamchathu)! - feat: :sparkles: improve the changeset difference calculation
+
 ## 0.1.1
 
 ### Patch Changes
