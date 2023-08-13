@@ -111,7 +111,7 @@ export const conventionalMessagesWithCommitsToChangesets = (
       const packagesChanged = packages.filter((pkg) => {
         return filesChanged.some((file) => file.match(pkg.dir.replace(`${getRepoRoot()}/`, '')));
       });
-      if (packages.length > 0 && packagesChanged.length === 0) return null;
+      if (packagesChanged.length === 0) return null;
       return {
         releases: packagesChanged.map((pkg) => {
           return {
