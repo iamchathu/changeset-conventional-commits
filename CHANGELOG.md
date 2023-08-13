@@ -1,5 +1,23 @@
 # changeset-conventional-commits
 
+## 0.1.0
+
+### Minor Changes
+
+- [#6](https://github.com/iamchathu/changeset-conventional-commits/pull/6) [`9f6bf0f`](https://github.com/iamchathu/changeset-conventional-commits/commit/9f6bf0fa970f15d1d07e851ca6924415206b5507) Thanks [@iamchathu](https://github.com/iamchathu)! - feat: :sparkles: add case to handle poly repository
+
+- [#6](https://github.com/iamchathu/changeset-conventional-commits/pull/6) [`9f6bf0f`](https://github.com/iamchathu/changeset-conventional-commits/commit/9f6bf0fa970f15d1d07e851ca6924415206b5507) Thanks [@iamchathu](https://github.com/iamchathu)! - feat: :sparkles: handle duplicate changeset creation
+
+### Patch Changes
+
+- [#6](https://github.com/iamchathu/changeset-conventional-commits/pull/6) [`9f6bf0f`](https://github.com/iamchathu/changeset-conventional-commits/commit/9f6bf0fa970f15d1d07e851ca6924415206b5507) Thanks [@iamchathu](https://github.com/iamchathu)! - revert: :rewind: revert git push tags from ci publish script
+
+- [#6](https://github.com/iamchathu/changeset-conventional-commits/pull/6) [`9f6bf0f`](https://github.com/iamchathu/changeset-conventional-commits/commit/9f6bf0fa970f15d1d07e851ca6924415206b5507) Thanks [@iamchathu](https://github.com/iamchathu)! - docs: :memo: update readme
+
+- [#6](https://github.com/iamchathu/changeset-conventional-commits/pull/6) [`9f6bf0f`](https://github.com/iamchathu/changeset-conventional-commits/commit/9f6bf0fa970f15d1d07e851ca6924415206b5507) Thanks [@iamchathu](https://github.com/iamchathu)! - ci: :construction_worker: update github action to publish tags
+
+- [#6](https://github.com/iamchathu/changeset-conventional-commits/pull/6) [`9f6bf0f`](https://github.com/iamchathu/changeset-conventional-commits/commit/9f6bf0fa970f15d1d07e851ca6924415206b5507) Thanks [@iamchathu](https://github.com/iamchathu)! - docs: :memo: add changesets
+
 ## 0.0.2
 
 ### Patch Changes
