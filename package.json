@@ -33,9 +33,11 @@
     "test": "jest",
     "lint": "eslint 'src/**/*.{ts,tsx}' --quiet --fix",
     "ci:version": "changeset version && pnpm install --lockfile-only",
+    "ci:publish": "changeset publish",
     "prepare": "husky install"
   },
   "dependencies": {
+    "@changesets/read": "^0.5.9",
     "@changesets/types": "^5.2.1",
     "@changesets/write": "^0.2.3",
     "@manypkg/get-packages": "^2.2.0",

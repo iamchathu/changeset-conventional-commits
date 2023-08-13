@@ -2,6 +2,11 @@
 
 Generate changesets based on the conventional commits.
 
+[![npm](https://img.shields.io/npm/v/changeset-conventional-commits.svg)](https://www.npmjs.com/package/changeset-conventional-commits)
+[![Known Vulnerabilities](https://snyk.io/test/github/iamchathu/changeset-conventional-commits/badge.svg)](https://snyk.io/test/github/iamchathu/changeset-conventional-commits)
+[![Code Climate](https://codeclimate.com/github/iamchathu/changeset-conventional-commits/badges/gpa.svg)](https://codeclimate.com/github/iamchathu/changeset-conventional-commits)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/iamchathu/changeset-conventional-commits/master/LICENSE)
+
 ## Install
 
 ```
@@ -14,11 +19,6 @@ pnpm add -D changeset-conventional-commits
 2. Run `pnpm changeset-conventional` in the root.
 
 This will generate changeset for each commit.
-
-## Known issues
-
-- Should be run in a branch.
-- Seems this generate duplicate changeset if you run multiple times.
 
 ## Note
 
