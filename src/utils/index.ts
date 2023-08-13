@@ -157,3 +157,11 @@ export const getCommitsSinceRef = (branch: string) => {
   }
   return execSync(`git rev-list --ancestry-path ${sinceRef}...HEAD`).toString().split('\n').filter(Boolean).reverse();
 };
+
+const compareChangeSet = (a: Changeset, b: Changeset): boolean => {
+  return a.summary === b.summary && JSON.stringify(a.releases) == JSON.stringify(b.releases);
+};
+
+export const difference = (a: Changeset[], b: Changeset[]): Changeset[] => {
+  return a.filter((changeA) => !b.some((changeB) => compareChangeSet(changeA, changeB)));
+};

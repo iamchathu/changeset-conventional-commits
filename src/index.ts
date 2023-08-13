@@ -8,6 +8,7 @@ import path from 'path';
 import {
   associateCommitsToConventionalCommitMessages,
   conventionalMessagesWithCommitsToChangesets,
+  difference,
   getCommitsSinceRef,
 } from './utils';
 
@@ -39,10 +40,7 @@ const conventionalCommitChangeset = async (
 
   const currentChangesets = await readChangeset(cwd);
 
-  const newChangesets =
-    currentChangesets.length === 0
-      ? changesets
-      : changesets.filter(({ summary }) => !currentChangesets.find((change) => change.summary === summary));
+  const newChangesets = currentChangesets.length === 0 ? changesets : difference(changesets, currentChangesets);
 
   newChangesets.forEach((changeset) => writeChangeset(changeset, cwd));
 };
