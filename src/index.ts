@@ -1,4 +1,5 @@
 #! /usr/bin/env node
+import readChangeset from '@changesets/read';
 import writeChangeset from '@changesets/write';
 import { getPackagesSync } from '@manypkg/get-packages';
 import { execSync } from 'child_process';
@@ -12,7 +13,7 @@ import {
 
 const CHANGESET_CONFIG_LOCATION = path.join('.changeset', 'config.json');
 
-const conventionalCommitChangeset = (
+const conventionalCommitChangeset = async (
   cwd: string = process.cwd(),
   options: { ignoredFiles: (string | RegExp)[] } = { ignoredFiles: [] },
 ) => {
@@ -35,7 +36,15 @@ const conventionalCommitChangeset = (
     ignoredFiles: options.ignoredFiles,
     packages,
   });
-  changesets.forEach((changeset) => writeChangeset(changeset, cwd));
+
+  const currentChangesets = await readChangeset(cwd);
+
+  const newChangesets =
+    currentChangesets.length === 0
+      ? changesets
+      : changesets.filter(({ summary }) => !currentChangesets.find((change) => change.summary === summary));
+
+  newChangesets.forEach((changeset) => writeChangeset(changeset, cwd));
 };
 
 conventionalCommitChangeset();

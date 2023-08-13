@@ -20,11 +20,6 @@ pnpm add -D changeset-conventional-commits
 
 This will generate changeset for each commit.
 
-## Known issues
-
-- Should be run in a branch.
-- Seems this generate duplicate changeset if you run multiple times.
-
 ## Note
 
 This library is created based on this [PR](https://github.com/willwill96/mono-repo-tools/pull/4/files). There are issues created in changesets
