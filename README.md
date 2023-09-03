@@ -7,6 +7,20 @@ Generate changesets based on the conventional commits.
 [![Code Climate](https://codeclimate.com/github/iamchathu/changeset-conventional-commits/badges/gpa.svg)](https://codeclimate.com/github/iamchathu/changeset-conventional-commits)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/iamchathu/changeset-conventional-commits/master/LICENSE)
 
+## Use without adding as a dev dependancy
+
+* Using **pnpm**
+
+```sh
+pnpm dlx changeset-conventional-commits
+```
+
+* Using **npx**
+
+```sh
+npx changeset-conventional-commits
+```
+
 ## Install
 
 ```
