@@ -1,5 +1,11 @@
 # changeset-conventional-commits
 
+## 0.2.1
+
+### Patch Changes
+
+- [#13](https://github.com/iamchathu/changeset-conventional-commits/pull/13) [`4849dd6`](https://github.com/iamchathu/changeset-conventional-commits/commit/4849dd675528c77026c7c745387fd31eba635817) Thanks [@iamchathu](https://github.com/iamchathu)! - docs: :memo: update readme
+
 ## 0.2.0
 
 ### Minor Changes
