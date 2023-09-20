@@ -155,6 +155,9 @@ export const getCommitsSinceRef = (branch: string) => {
       sinceRef = execSync('git rev-list --max-parents=0 HEAD').toString();
     }
   }
+
+  sinceRef = sinceRef.trim();
+
   return execSync(`git rev-list --ancestry-path ${sinceRef}...HEAD`).toString().split('\n').filter(Boolean).reverse();
 };
 
