@@ -1,5 +1,11 @@
 # changeset-conventional-commits
 
+## 0.2.2
+
+### Patch Changes
+
+- [#15](https://github.com/iamchathu/changeset-conventional-commits/pull/15) [`2e103e6`](https://github.com/iamchathu/changeset-conventional-commits/commit/2e103e6939e8cb1f946a129ef5a048d539034168) Thanks [@jakub-hajduk](https://github.com/jakub-hajduk)! - Fixed new line markers in git command causing errors
+
 ## 0.2.1
 
 ### Patch Changes
