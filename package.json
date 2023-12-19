@@ -37,7 +37,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@changesets/read": "^0.5.9",
+    "@changesets/read": "^0.6.0",
     "@changesets/types": "^5.2.1",
     "@changesets/write": "^0.2.3",
     "@manypkg/get-packages": "^2.2.0",
