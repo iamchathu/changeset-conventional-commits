@@ -1,5 +1,12 @@
 # changeset-conventional-commits
 
+## 0.2.3
+
+### Patch Changes
+
+- [#19](https://github.com/iamchathu/changeset-conventional-commits/pull/19) [`4d742d3`](https://github.com/iamchathu/changeset-conventional-commits/commit/4d742d308b8e4aea0786a5fc7aea1cc69edb62e3) Thanks [@iamchathu](https://github.com/iamchathu)! - - Setup npm provenance.
+  - Update minor dependencies.
+
 ## 0.2.2
 
 ### Patch Changes
