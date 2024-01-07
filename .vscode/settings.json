@@ -2,10 +2,22 @@
   "eslint.enable": true,
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll": true,
-    "source.organizeImports": true
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
   },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.tsc.autoDetect": "off",
+  "npm.packageManager": "pnpm",
   "git.branchProtection": ["master"],
+  "files.trimTrailingWhitespace": true,
+  "search.exclude": {
+    "node_modules": true,
+    "dist/**": true
+  },
+  "files.readonlyInclude": {
+    "node_modules/**/*.*": true,
+    "pnpm-lock.yaml": true
+  },
   "yaml.schemas": {
     "https://json.schemastore.org/github-workflow.json": "/.github/workflows/*.yml"
   },
