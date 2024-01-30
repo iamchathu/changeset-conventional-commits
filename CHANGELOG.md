@@ -1,5 +1,14 @@
 # changeset-conventional-commits
 
+## 0.2.4
+
+### Patch Changes
+
+- [#23](https://github.com/iamchathu/changeset-conventional-commits/pull/23) [`9aaa449`](https://github.com/iamchathu/changeset-conventional-commits/commit/9aaa449b662f34d48a848149a6d965a43f2718ff) Thanks [@nerdgore](https://github.com/nerdgore)! - fix: read full git commit message
+
+  Fixes an issue where the body of a git
+  commit message was ignored.
+
 ## 0.2.3
 
 ### Patch Changes
