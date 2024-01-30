@@ -28,7 +28,7 @@ const conventionalCommitChangeset = async (
 
   const commitsWithMessages = commitsSinceBase.map((commitHash) => ({
     commitHash,
-    commitMessage: execSync(`git log -n 1 --pretty=format:%s ${commitHash}`).toString(),
+    commitMessage: execSync(`git log -n 1 --pretty=format:%B ${commitHash}`).toString(),
   }));
 
   const changelogMessagesWithAssociatedCommits = associateCommitsToConventionalCommitMessages(commitsWithMessages);
