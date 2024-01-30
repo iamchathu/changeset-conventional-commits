@@ -22,40 +22,81 @@ describe('is-breaking', () => {
   });
 });
 
+describe('is-breaking-multiline', () => {
+  it('correctly identifies a breaking change', () => {
+    expect(
+      isBreakingChange(
+        ['feat!: a change', 'First paragraph description.', 'Second paragraph description.'].join('\n\n'),
+      ),
+    ).toEqual(true);
+  });
+  it('correctly identifies a breaking change with a scope', () => {
+    expect(
+      isBreakingChange(
+        ['feat(scope)!: a change', 'First paragraph description.', 'Second paragraph description.'].join('\n\n'),
+      ),
+    ).toEqual(true);
+  });
+  // @see https://www.conventionalcommits.org/en/v1.0.0/#specification
+  it('correctly identifies a breaking change with all caps BREAKING CHANGE in message footer without body', () => {
+    expect(isBreakingChange(['feat(scope): a change', 'BREAKING CHANGE: vars now uppercase'].join('\n\n'))).toEqual(
+      true,
+    );
+  });
+  it('correctly identifies a breaking change with all caps BREAKING CHANGE in message footer', () => {
+    expect(
+      isBreakingChange(
+        [
+          'feat(scope): a change',
+          'First paragraph description.',
+          'Second paragraph description.',
+          'BREAKING CHANGE: vars now uppercase',
+        ].join('\n\n'),
+      ),
+    ).toEqual(true);
+  });
+  it('correctly identifies a non-breaking change', () => {
+    expect(
+      isBreakingChange(
+        [
+          'feat: a change',
+          'First paragraph description.',
+          'Second paragraph description.',
+          'Reviewed-by: ZZZ\nRefs: #123',
+        ].join('\n\n'),
+      ),
+    ).toEqual(false);
+  });
+});
+
 describe('is-conventional-commit', () => {
-  it('correctly identifies a feature conventional commit', () => {
-    expect(isConventionalCommit('feat: a change')).toEqual(true);
-  });
-  it('correctly identifies a fix conventional commit', () => {
-    expect(isConventionalCommit('fix: a change')).toEqual(true);
-  });
-  it('correctly identifies a perf conventional commit', () => {
-    expect(isConventionalCommit('perf: a change')).toEqual(true);
-  });
-  it('correctly identifies a revert conventional commit', () => {
-    expect(isConventionalCommit('revert: a change')).toEqual(true);
-  });
-  it('correctly identifies a docs conventional commit', () => {
-    expect(isConventionalCommit('docs: a change')).toEqual(true);
-  });
-  it('correctly identifies a style conventional commit', () => {
-    expect(isConventionalCommit('style: a change')).toEqual(true);
-  });
-  it('correctly identifies a chore conventional commit', () => {
-    expect(isConventionalCommit('chore: a change')).toEqual(true);
-  });
-  it('correctly identifies a refactor conventional commit', () => {
-    expect(isConventionalCommit('refactor: a change')).toEqual(true);
-  });
-  it('correctly identifies a test conventional commit', () => {
-    expect(isConventionalCommit('test: a change')).toEqual(true);
-  });
-  it('correctly identifies a build conventional commit', () => {
-    expect(isConventionalCommit('build: a change')).toEqual(true);
-  });
-  it('correctly identifies a ci conventional commit', () => {
-    expect(isConventionalCommit('ci: a change')).toEqual(true);
-  });
+  describe.each(['feat', 'fix', 'perf', 'revert', 'docs', 'style', 'chore', 'refactor', 'test', 'build', 'ci'])(
+    'correctly identifies a %s conventional commit',
+    (type: string) => {
+      it('with subject only', () => {
+        expect(isConventionalCommit(`${type}: a change`)).toEqual(true);
+      });
+      it('with subject and body', () => {
+        expect(
+          isConventionalCommit(
+            [`${type}: a change`, 'First paragraph description.', 'Second paragraph description.'].join('\n\n'),
+          ),
+        ).toEqual(true);
+      });
+      it('with subject, body and footers', () => {
+        expect(
+          isConventionalCommit(
+            [
+              `${type}: a change`,
+              'First paragraph description.',
+              'Second paragraph description.',
+              'Reviewed-by: ZZZ\nRefs: #123',
+            ].join('\n\n'),
+          ),
+        ).toEqual(true);
+      });
+    },
+  );
   it('correctly identifies a non-conventional commit', () => {
     expect(isConventionalCommit('a change')).toEqual(false);
   });
