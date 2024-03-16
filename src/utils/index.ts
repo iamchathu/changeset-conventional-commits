@@ -119,8 +119,8 @@ export const conventionalMessagesWithCommitsToChangesets = (
             type: isBreakingChange(entry.changelogMessage)
               ? 'major'
               : entry.changelogMessage.startsWith('feat')
-              ? 'minor'
-              : 'patch',
+                ? 'minor'
+                : 'patch',
           };
         }),
         summary: entry.changelogMessage,
@@ -162,7 +162,7 @@ export const getCommitsSinceRef = (branch: string) => {
 };
 
 const compareChangeSet = (a: Changeset, b: Changeset): boolean => {
-  return a.summary === b.summary && JSON.stringify(a.releases) == JSON.stringify(b.releases);
+  return a.summary.replace(/\n$/, '') === b.summary && JSON.stringify(a.releases) == JSON.stringify(b.releases);
 };
 
 export const difference = (a: Changeset[], b: Changeset[]): Changeset[] => {

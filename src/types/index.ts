@@ -1,3 +1,5 @@
+import { Changeset } from '@changesets/types';
+
 export interface PkgJson {
   name?: string;
   version?: string;
@@ -30,3 +32,11 @@ export interface ManyPkgPackages {
   packages: ManyPkgPackage[];
   root: ManyPkgPackage;
 }
+
+export type ChangesetConventionalCommit = Changeset & {
+  packagesChanged: {
+    dir: string;
+    relativeDir: string;
+    packageJson: PkgJson;
+  }[];
+};
