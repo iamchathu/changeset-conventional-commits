@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import { ChangesetConventionalCommit } from '../types';
+import { ChangesetConventionalCommit } from '../types/index.js';
 import {
   associateCommitsToConventionalCommitMessages,
   difference,
@@ -7,7 +7,7 @@ import {
   gitFetch,
   isBreakingChange,
   isConventionalCommit,
-} from '../utils';
+} from '../utils/index.js';
 
 describe('is-breaking', () => {
   it('correctly identifies a breaking change', () => {

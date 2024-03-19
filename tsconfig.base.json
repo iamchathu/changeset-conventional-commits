@@ -7,7 +7,7 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "Bundler",
+    "moduleResolution": "Node16",
     "types": ["node"]
   }
 }

@@ -7,15 +7,28 @@ Generate changesets based on the conventional commits.
 [![Code Climate](https://codeclimate.com/github/iamchathu/changeset-conventional-commits/badges/gpa.svg)](https://codeclimate.com/github/iamchathu/changeset-conventional-commits)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/iamchathu/changeset-conventional-commits/master/LICENSE)
 
+```
+Generate Changesets from conventional commits
+
+  Usage
+    $ changeset-conventional [options]
+  Options
+    --dry         -d    Dry run (don't write any changelogs), implies `--verbose`
+    --git-fetch   -gf   Incl. run of `git fetch` to update local repo
+    --verbose           Gives verbose output
+    --help        -h    Shows this help
+    --version           Shows version
+```
+
 ## Use without adding as a dev dependancy
 
-* Using **pnpm**
+- Using **pnpm**
 
 ```sh
 pnpm dlx changeset-conventional-commits
 ```
 
-* Using **npx**
+- Using **npx**
 
 ```sh
 npx changeset-conventional-commits
