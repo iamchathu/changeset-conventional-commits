@@ -9,7 +9,7 @@ export default defineConfig({
   sourcemap: 'inline',
   clean: true,
   bundle: false,
-  target: 'node16',
-  format: 'cjs',
+  target: 'es2022',
+  format: 'esm',
   tsconfig: 'tsconfig.build.json',
 });
