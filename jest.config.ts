@@ -12,6 +12,7 @@ const jestConfig: Config = {
   testRegex: '.*\\.spec\\.ts$',
   collectCoverageFrom: ['**/*.(t|j)s'],
   testEnvironment: 'node',
+  collectCoverage: true,
   coverageReporters: ['text', 'cobertura'],
 };
 
