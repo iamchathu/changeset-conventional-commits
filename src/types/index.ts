@@ -33,6 +33,22 @@ export interface ManyPkgPackages {
   root: ManyPkgPackage;
 }
 
+export interface MeowOptions {
+  input: string[];
+  flags: {
+    gitFetch: boolean | undefined;
+    dry: boolean | undefined;
+    help: boolean | undefined;
+    verbose: boolean | undefined;
+  };
+}
+
+export interface LogHeaderOptions {
+  newline?: boolean;
+  lead?: boolean;
+  bold?: boolean;
+}
+
 export type ChangesetConventionalCommit = Changeset & {
   packagesChanged: {
     dir: string;

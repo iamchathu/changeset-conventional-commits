@@ -1,6 +1,6 @@
 import type { Changeset } from '@changesets/types';
 import { execSync } from 'child_process';
-import type { ManyPkgPackage } from '../types';
+import type { MeowOptions, ManyPkgPackage } from '../types/index.js';
 
 interface Commit {
   commitHash: string;
@@ -141,8 +141,11 @@ export const getCurrentBranch = () => {
 // This could be running on the main branch or on a branch that was created from the main branch.
 // If this is running on the main branch, we want to get all commits since the last release.
 // If this is running on a branch that was created from the main branch, we want to get all commits since the branch was created.
-export const getCommitsSinceRef = (branch: string) => {
-  gitFetch(branch);
+export const getCommitsSinceRef = (branch: string, options: MeowOptions) => {
+  if (options.flags.gitFetch) {
+    gitFetch(branch);
+  }
+
   const currentBranch = getCurrentBranch();
   let sinceRef = `origin/${branch}`;
   if (currentBranch === branch) {
