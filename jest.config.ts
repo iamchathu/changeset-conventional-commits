@@ -14,6 +14,8 @@ const jestConfig: Config = {
   testEnvironment: 'node',
   collectCoverage: true,
   coverageReporters: ['text', 'cobertura'],
+  // As by [SWC > Docs > @swc/jest > Q: Jest uses CommonJS by default. But I want to use ESM](https://swc.rs/docs/usage/jest#q-jest-uses-commonjs-by-default-but-i-want-to-use-esm)
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
 };
 
 export default jestConfig;

@@ -1,6 +1,6 @@
 import type { Changeset } from '@changesets/types';
 import { execSync } from 'child_process';
-import type { ManyPkgPackage } from '../types';
+import type { ManyPkgPackage } from '../types/index.js';
 
 interface Commit {
   commitHash: string;
