@@ -40,3 +40,20 @@ export type ChangesetConventionalCommit = Changeset & {
     packageJson: PkgJson;
   }[];
 };
+
+export interface MeowOptions {
+  input: string[];
+  flags: {
+    dry: boolean | undefined;
+    gitFetch: boolean | undefined;
+    verbosity: boolean | undefined;
+    help: boolean | undefined;
+    version: boolean | undefined;
+  };
+}
+
+export interface LogHeaderOptions {
+  newline?: boolean;
+  lead?: boolean;
+  bold?: boolean;
+}

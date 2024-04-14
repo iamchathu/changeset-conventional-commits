@@ -1,6 +1,8 @@
-import type { Changeset } from '@changesets/types';
 import { execSync } from 'child_process';
-import type { ManyPkgPackage } from '../types/index.js';
+import chalk from 'chalk';
+import { log } from '@changesets/logger';
+import type { Changeset } from '@changesets/types';
+import type { ManyPkgPackage, LogHeaderOptions, MeowOptions } from '../types/index.js';
 
 interface Commit {
   commitHash: string;
@@ -31,6 +33,26 @@ const defaultCommitTypes = [
   { type: 'build', section: 'Build System' },
   { type: 'ci', section: 'Continuous Integration' },
 ];
+
+export const logHeader = (m: string, o?: LogHeaderOptions) => {
+  o = { newline: true, lead: true, bold: true, ...o };
+
+  return (o.newline ? '\n' : '') + (o.bold ? chalk.bold((o.lead ? ':: ' : '') + m) : (o.lead ? ':: ' : '') + m);
+};
+
+export const logger = <T>(logger: typeof log, m: T, options: MeowOptions) => {
+  if (options.flags.verbosity !== false || logger !== log) {
+    logger(m);
+  }
+};
+
+export const changesetsSummaryFirstLine = (cs: Changeset[]) => {
+  // Take first line only and remove possible backticks for better readability
+  return cs.reduce(
+    (s, c, i) => s + '   ' + c.summary.split('\n', 1)[0].replace(/`/g, '') + (cs[i + 1] ? '\n' : ''),
+    '',
+  );
+};
 
 export const isBreakingChange = (commit: string) => {
   return (
@@ -141,8 +163,11 @@ export const getCurrentBranch = () => {
 // This could be running on the main branch or on a branch that was created from the main branch.
 // If this is running on the main branch, we want to get all commits since the last release.
 // If this is running on a branch that was created from the main branch, we want to get all commits since the branch was created.
-export const getCommitsSinceRef = (branch: string) => {
-  gitFetch(branch);
+export const getCommitsSinceRef = (branch: string, options: MeowOptions) => {
+  if (options.flags.gitFetch !== false) {
+    gitFetch(branch);
+  }
+
   const currentBranch = getCurrentBranch();
   let sinceRef = `origin/${branch}`;
   if (currentBranch === branch) {
