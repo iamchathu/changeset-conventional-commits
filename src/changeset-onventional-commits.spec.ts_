@@ -1,0 +1,21 @@
+// DODO (2024-04-18): Wait for our test-repo setup(s) within `test/repos/` to make this run on Git(Hub|Lab)
+import { describe, expect, it } from '@jest/globals';
+import { init, main } from './changesetConventionalCommits.js';
+import type { ChangesetConventionalCommits } from './types/index.js';
+
+const changesetConventionalCommits: ChangesetConventionalCommits | undefined = await init();
+
+// DODO: Add a bunch of repos or "dynamic" repo(s) which we'll modify to various testing scenarios
+if (changesetConventionalCommits) {
+  // changesetConventionalCommits.cwd = 'test/repos/';
+  changesetConventionalCommits.options.flags.dry = true;
+  changesetConventionalCommits.options.flags.noGitFetch = true;
+} else {
+  throw `Changeset Conventional Commits wasn't able to initialize!`;
+}
+
+describe('main', () => {
+  it('can run', async () => {
+    expect(await main(changesetConventionalCommits)).toEqual(true);
+  });
+});
