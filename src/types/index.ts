@@ -1,4 +1,5 @@
 import { Changeset } from '@changesets/types';
+import { Package } from '@manypkg/get-packages';
 
 export interface PkgJson {
   name?: string;
@@ -33,13 +34,15 @@ export interface ManyPkgPackages {
   root: ManyPkgPackage;
 }
 
-export type ChangesetConventionalCommit = Changeset & {
-  packagesChanged: {
-    dir: string;
-    relativeDir: string;
-    packageJson: PkgJson;
-  }[];
-};
+export interface Commit {
+  hash: string;
+  message: string;
+}
+
+export interface ConventionalMessagesToCommits {
+  changelogMessage: string;
+  commitHashes: string[];
+}
 
 export interface MeowOptions {
   input: string[];
@@ -56,4 +59,21 @@ export interface LogHeaderOptions {
   newline?: boolean;
   lead?: boolean;
   bold?: boolean;
+}
+
+export type ChangesetConventionalCommitsPackages = Changeset & {
+  packagesChanged: {
+    dir: string;
+    relativeDir: string;
+    packageJson: PkgJson;
+  }[];
+};
+
+export interface ChangesetConventionalCommits {
+  branchBase: string;
+  branchCurrent: string;
+  cwd: string;
+  ignoredFiles?: (string | RegExp)[];
+  options: MeowOptions;
+  packages: Package[];
 }

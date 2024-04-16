@@ -2,17 +2,13 @@ import { execSync } from 'child_process';
 import chalk from 'chalk';
 import { log } from '@changesets/logger';
 import type { Changeset } from '@changesets/types';
-import type { ManyPkgPackage, LogHeaderOptions, MeowOptions } from '../types/index.js';
-
-interface Commit {
-  commitHash: string;
-  commitMessage: string;
-}
-
-interface ConventionalMessagesToCommits {
-  changelogMessage: string;
-  commitHashes: string[];
-}
+import type {
+  Commit,
+  ChangesetConventionalCommits,
+  ConventionalMessagesToCommits,
+  LogHeaderOptions,
+  MeowOptions,
+} from '../types/index.js';
 
 /*
  * Copied from conventional commits config:
@@ -73,27 +69,27 @@ export const associateCommitsToConventionalCommitMessages = (commits: Commit[]):
     if (!acc.length) {
       return [
         {
-          changelogMessage: curr.commitMessage,
-          commitHashes: [curr.commitHash],
+          changelogMessage: curr.message,
+          commitHashes: [curr.hash],
         },
       ];
     }
 
-    if (isConventionalCommit(curr.commitMessage)) {
+    if (isConventionalCommit(curr.message)) {
       if (isConventionalCommit(acc[acc.length - 1].changelogMessage)) {
         return [
           ...acc,
           {
-            changelogMessage: curr.commitMessage,
-            commitHashes: [curr.commitHash],
+            changelogMessage: curr.message,
+            commitHashes: [curr.hash],
           },
         ];
       } else {
         return [
           ...acc.slice(0, acc.length - 1),
           {
-            changelogMessage: curr.commitMessage,
-            commitHashes: [...acc[acc.length - 1].commitHashes, curr.commitHash],
+            changelogMessage: curr.message,
+            commitHashes: [...acc[acc.length - 1].commitHashes, curr.hash],
           },
         ];
       }
@@ -102,7 +98,7 @@ export const associateCommitsToConventionalCommitMessages = (commits: Commit[]):
         ...acc.slice(0, acc.length - 1),
         {
           ...acc[acc.length - 1],
-          commitHashes: [...acc[acc.length - 1].commitHashes, curr.commitHash],
+          commitHashes: [...acc[acc.length - 1].commitHashes, curr.hash],
         },
       ];
     }
@@ -119,9 +115,9 @@ export const getRepoRoot = () => {
 
 export const conventionalMessagesWithCommitsToChangesets = (
   conventionalMessagesToCommits: ConventionalMessagesToCommits[],
-  options: { ignoredFiles?: (string | RegExp)[]; packages: ManyPkgPackage[] },
+  changesetConventionalCommits: ChangesetConventionalCommits,
 ) => {
-  const { ignoredFiles = [], packages } = options;
+  const { ignoredFiles = [], packages } = changesetConventionalCommits;
   return conventionalMessagesToCommits
     .map((entry) => {
       const filesChanged = getFilesChangedSince({

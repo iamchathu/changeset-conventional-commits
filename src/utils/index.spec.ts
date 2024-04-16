@@ -1,5 +1,4 @@
 import { describe, expect, it } from '@jest/globals';
-import { ChangesetConventionalCommit } from '../types/index.js';
 import {
   associateCommitsToConventionalCommitMessages,
   difference,
@@ -8,6 +7,7 @@ import {
   isBreakingChange,
   isConventionalCommit,
 } from '../utils/index.js';
+import type { ChangesetConventionalCommitsPackages } from '../types/index.js';
 
 describe('is-breaking', () => {
   it('correctly identifies a breaking change', () => {
@@ -109,12 +109,12 @@ describe('associate-commits-to-conventional-commit-messages', () => {
     expect(
       associateCommitsToConventionalCommitMessages([
         {
-          commitHash: 'hash1',
-          commitMessage: 'a change',
+          hash: 'hash1',
+          message: 'a change',
         },
         {
-          commitHash: 'hash2',
-          commitMessage: 'feat: a change',
+          hash: 'hash2',
+          message: 'feat: a change',
         },
       ]),
     ).toEqual([
@@ -128,12 +128,12 @@ describe('associate-commits-to-conventional-commit-messages', () => {
     expect(
       associateCommitsToConventionalCommitMessages([
         {
-          commitHash: 'hash1',
-          commitMessage: 'feat: a change',
+          hash: 'hash1',
+          message: 'feat: a change',
         },
         {
-          commitHash: 'hash2',
-          commitMessage: 'a change',
+          hash: 'hash2',
+          message: 'a change',
         },
       ]),
     ).toEqual([
@@ -147,16 +147,16 @@ describe('associate-commits-to-conventional-commit-messages', () => {
     expect(
       associateCommitsToConventionalCommitMessages([
         {
-          commitHash: 'hash1',
-          commitMessage: 'a change',
+          hash: 'hash1',
+          message: 'a change',
         },
         {
-          commitHash: 'hash2',
-          commitMessage: 'feat: a change',
+          hash: 'hash2',
+          message: 'feat: a change',
         },
         {
-          commitHash: 'hash3',
-          commitMessage: 'a change',
+          hash: 'hash3',
+          message: 'a change',
         },
       ]),
     ).toEqual([
@@ -170,24 +170,24 @@ describe('associate-commits-to-conventional-commit-messages', () => {
     expect(
       associateCommitsToConventionalCommitMessages([
         {
-          commitHash: 'hash1',
-          commitMessage: 'a change',
+          hash: 'hash1',
+          message: 'a change',
         },
         {
-          commitHash: 'hash2',
-          commitMessage: 'feat: first change',
+          hash: 'hash2',
+          message: 'feat: first change',
         },
         {
-          commitHash: 'hash3',
-          commitMessage: 'a change',
+          hash: 'hash3',
+          message: 'a change',
         },
         {
-          commitHash: 'hash4',
-          commitMessage: 'feat: second change',
+          hash: 'hash4',
+          message: 'feat: second change',
         },
         {
-          commitHash: 'hash5',
-          commitMessage: 'a change',
+          hash: 'hash5',
+          message: 'a change',
         },
       ]),
     ).toEqual([
@@ -235,7 +235,7 @@ describe('difference', () => {
         },
       ],
     },
-  ] as ChangesetConventionalCommit[];
+  ] as ChangesetConventionalCommitsPackages[];
 
   const currentChangesets = [
     {
@@ -257,7 +257,7 @@ describe('difference', () => {
         },
       ],
     },
-  ] as ChangesetConventionalCommit[];
+  ] as ChangesetConventionalCommitsPackages[];
 
   it('correctly detects equal changesets *without* trailing new line/line break within `summary`', () => {
     expect(difference(changesets, currentChangesets)).toEqual([changesets[1]]);
