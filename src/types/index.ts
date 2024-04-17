@@ -70,9 +70,19 @@ export type ChangesetConventionalCommitsPackages = Changeset & {
   }[];
 };
 
+export interface CommitTypes {
+  type: string;
+  section: string;
+}
+
+export interface ChangesetConventionalCommitsConfig {
+  commitTypes: CommitTypes[];
+}
+
 export interface ChangesetConventionalCommits {
   branchBase: string;
   branchCurrent: string;
+  config: ChangesetConventionalCommitsConfig;
   configChangesets: ChangesetsConfig;
   cwd: string;
   ignoredFiles?: (string | RegExp)[];

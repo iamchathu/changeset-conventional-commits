@@ -1,21 +1,29 @@
 import { execSync } from 'child_process';
+import path from 'path';
+import fs from 'fs-extra';
 import chalk from 'chalk';
 import { log } from '@changesets/logger';
 import type { Changeset } from '@changesets/types';
 import type {
-  Commit,
+  ChangesetConventionalCommitsConfig as Config,
   ChangesetConventionalCommits,
+  Commit,
+  CommitTypes,
   ConventionalMessagesToCommits,
   LogHeaderOptions,
   MeowOptions,
 } from '../types/index.js';
 
 /*
- * Copied from conventional commits config:
+ * List of Commit Types from Conventional Commits/Changelog:
  * https://github.com/conventional-changelog/conventional-changelog/blob/master/packages/conventional-changelog-conventionalcommits/writer-opts.js
  * "section" is currently unused but is left in, with the intent to update changeset changelog generation once more fleshed out
+ * DODO (2024-04-15): Section can go, this will just depend on 'type'.
  */
-const defaultCommitTypes = [
+// DODO (2024-04-15): Add and act on 'semver' (null, 'patch', 'minor'), because e.g. 'chore', 'examples', 'test', 'style' and 'ci'
+// should surely not ignite a release!
+// See [UnJS > Changelogen > 'config.ts'](https://github.com/unjs/changelogen/blob/main/src/config.ts)
+export const defaultCommitTypes: CommitTypes[] = [
   { type: 'feat', section: 'Features' },
   { type: 'feature', section: 'Features' },
   { type: 'fix', section: 'Bug Fixes' },
@@ -28,7 +36,28 @@ const defaultCommitTypes = [
   { type: 'test', section: 'Tests' },
   { type: 'build', section: 'Build System' },
   { type: 'ci', section: 'Continuous Integration' },
+  // Added
+  { type: 'devops', section: 'DevOps' },
+  { type: 'examples', section: 'Examples' },
 ];
+
+export const configDefault = (): Config => ({
+  commitTypes: defaultCommitTypes,
+});
+
+export const configRead = (cwd: string, options: MeowOptions) => {
+  const config = configDefault();
+
+  if (!fs.existsSync(path.join(cwd, '.changeset', 'config-conventional.json'))) {
+    logger(log, `   Config '.changeset/config-conventional.json' not found, using defaults`, options);
+  } else {
+    const configLocal: Config = fs.readJSONSync(path.join(cwd, '.changeset', 'config-conventional.json'));
+    config.commitTypes = configLocal.commitTypes ?? config.commitTypes;
+    logger(log, `   Config '.changeset/config-conventional.json' found and loaded`, options);
+  }
+
+  return config;
+};
 
 export const logHeader = (m: string, o?: LogHeaderOptions) => {
   o = { newline: true, lead: true, bold: true, ...o };
@@ -50,21 +79,24 @@ export const changesetsSummaryFirstLine = (cs: Changeset[]) => {
   );
 };
 
-export const isBreakingChange = (commit: string) => {
+export const isBreakingChange = (commit: string, config: Config) => {
   return (
     commit.includes('BREAKING CHANGE:') ||
     // eslint-disable-next-line no-useless-escape
-    defaultCommitTypes.some((commitType) => commit.match(new RegExp(`^${commitType.type}(?:\(.*\))?!:`)))
+    config.commitTypes.some((commitType) => commit.match(new RegExp(`^${commitType.type}(?:\(.*\))?!:`)))
   );
 };
 
-export const isConventionalCommit = (commit: string) => {
+export const isConventionalCommit = (commit: string, config: Config) => {
   // eslint-disable-next-line no-useless-escape
-  return defaultCommitTypes.some((commitType) => commit.match(new RegExp(`^${commitType.type}(?:\(.*\))?!?:`)));
+  return config.commitTypes.some((commitType) => commit.match(new RegExp(`^${commitType.type}(?:\(.*\))?!?:`)));
 };
 
 /* Attempts to associate non-conventional commits to the nearest conventional commit */
-export const associateCommitsToConventionalCommitMessages = (commits: Commit[]): ConventionalMessagesToCommits[] => {
+export const associateCommitsToConventionalCommitMessages = (
+  commits: Commit[],
+  config: Config,
+): ConventionalMessagesToCommits[] => {
   return commits.reduce((acc, curr) => {
     if (!acc.length) {
       return [
@@ -75,8 +107,8 @@ export const associateCommitsToConventionalCommitMessages = (commits: Commit[]):
       ];
     }
 
-    if (isConventionalCommit(curr.message)) {
-      if (isConventionalCommit(acc[acc.length - 1].changelogMessage)) {
+    if (isConventionalCommit(curr.message, config)) {
+      if (isConventionalCommit(acc[acc.length - 1].changelogMessage, config)) {
         return [
           ...acc,
           {
@@ -117,7 +149,7 @@ export const conventionalMessagesWithCommitsToChangesets = (
   conventionalMessagesToCommits: ConventionalMessagesToCommits[],
   changesetConventionalCommits: ChangesetConventionalCommits,
 ) => {
-  const { ignoredFiles = [], packages } = changesetConventionalCommits;
+  const { config, ignoredFiles = [], packages } = changesetConventionalCommits;
   return conventionalMessagesToCommits
     .map((entry) => {
       const filesChanged = getFilesChangedSince({
@@ -134,7 +166,7 @@ export const conventionalMessagesWithCommitsToChangesets = (
         releases: packagesChanged.map((pkg) => {
           return {
             name: pkg.packageJson.name,
-            type: isBreakingChange(entry.changelogMessage)
+            type: isBreakingChange(entry.changelogMessage, config)
               ? 'major'
               : entry.changelogMessage.startsWith('feat')
                 ? 'minor'

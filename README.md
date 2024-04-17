@@ -40,6 +40,7 @@ Generate Changesets from Conventional Commits
     Changeset Conventional Commits
 
     :: Infos/Notes
+       Config '.changeset/config-conventional.json' found and loaded
        Generate changesets for private packages regardless of Changeses' settings for 'privatePackages' (--private)
        Not running 'git fetch' to update local repo (--git-fetch false)
        Dry run, not writing any files/changesets (--dry)
@@ -141,6 +142,40 @@ This will generate changeset for each commit.
   Set for extra verbosity.
 
   Set `false` to suppress most output.
+
+## Configuration
+
+`.changesets/config-conventional.json`
+
+- Commit Types of Conventional Commits for Changelog
+
+  ```ts
+  commitTypes: [
+    { type: string, section: string},
+    ...
+  ]
+  ```
+
+  Default:
+
+  ```ts
+  [
+    { type: 'feat', section: 'Features' },
+    { type: 'feature', section: 'Features' },
+    { type: 'fix', section: 'Bug Fixes' },
+    { type: 'perf', section: 'Performance Improvements' },
+    { type: 'revert', section: 'Reverts' },
+    { type: 'docs', section: 'Documentation' },
+    { type: 'style', section: 'Styles' },
+    { type: 'chore', section: 'Miscellaneous Chores' },
+    { type: 'refactor', section: 'Code Refactoring' },
+    { type: 'test', section: 'Tests' },
+    { type: 'build', section: 'Build System' },
+    { type: 'ci', section: 'Continuous Integration' },
+    { type: 'devops', section: 'DevOps' },
+    { type: 'examples', section: 'Examples' },
+  ];
+  ```
 
 ## Note
 

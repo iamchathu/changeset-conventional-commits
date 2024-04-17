@@ -10,6 +10,7 @@ import meow from 'meow';
 import {
   associateCommitsToConventionalCommitMessages,
   changesetsSummaryFirstLine,
+  configRead,
   conventionalMessagesWithCommitsToChangesets,
   difference,
   getCommitsSinceRef,
@@ -114,6 +115,8 @@ export const init = async (): Promise<ChangesetConventionalCommits | undefined> 
 
   logger(log, logHeader('Infos/Notes'), options);
 
+  const config = configRead(cwd, options);
+
   if (options.flags.private === true) {
     logger(
       log,
@@ -139,6 +142,7 @@ export const init = async (): Promise<ChangesetConventionalCommits | undefined> 
   return {
     branchBase,
     branchCurrent,
+    config,
     configChangesets,
     cwd,
     options,
@@ -147,7 +151,7 @@ export const init = async (): Promise<ChangesetConventionalCommits | undefined> 
 };
 
 export const main = async (changesetConventionalCommits: ChangesetConventionalCommits) => {
-  const { branchBase, cwd, options, packages } = changesetConventionalCommits;
+  const { branchBase, config, cwd, options, packages } = changesetConventionalCommits;
 
   logger(log, logHeader('Package(s)'), options);
   logger(
@@ -200,7 +204,10 @@ export const main = async (changesetConventionalCommits: ChangesetConventionalCo
     );
   }
 
-  const changelogMessagesWithAssociatedCommits = associateCommitsToConventionalCommitMessages(commitsWithMessages);
+  const changelogMessagesWithAssociatedCommits = associateCommitsToConventionalCommitMessages(
+    commitsWithMessages,
+    config,
+  );
 
   if (options.flags.verbosity) {
     logger(log, logHeader('Changelog Messages With Associated Commits'), options);
