@@ -38,6 +38,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@changesets/config": "3.0.0",
     "@changesets/logger": "^0.1.0",
     "@changesets/read": "^0.6.0",
     "@changesets/types": "^6.0.0",

@@ -1,4 +1,4 @@
-import { Changeset } from '@changesets/types';
+import { Changeset, Config as ChangesetsConfig } from '@changesets/types';
 import { Package } from '@manypkg/get-packages';
 
 export interface PkgJson {
@@ -49,6 +49,7 @@ export interface MeowOptions {
   flags: {
     dry: boolean | undefined;
     gitFetch: boolean | undefined;
+    private: boolean | undefined;
     verbosity: boolean | undefined;
     help: boolean | undefined;
     version: boolean | undefined;
@@ -72,6 +73,7 @@ export type ChangesetConventionalCommitsPackages = Changeset & {
 export interface ChangesetConventionalCommits {
   branchBase: string;
   branchCurrent: string;
+  configChangesets: ChangesetsConfig;
   cwd: string;
   ignoredFiles?: (string | RegExp)[];
   options: MeowOptions;

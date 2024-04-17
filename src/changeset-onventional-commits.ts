@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 import { execSync } from 'child_process';
 import fs from 'fs';
-import path from 'path';
+import { read as configReadChangesets } from '@changesets/config';
 import readChangeset from '@changesets/read';
 import writeChangeset from '@changesets/write';
 import { error, info, log, success } from '@changesets/logger';
@@ -17,11 +17,10 @@ import {
   logHeader,
   logger,
 } from './utils/index.js';
+import { isListablePackage } from './utils/is-listable-package.js';
 import type { ChangesetConventionalCommits } from './types/index.js';
 
 export const init = async (): Promise<ChangesetConventionalCommits | undefined> => {
-  const CHANGESET_CONFIG_LOCATION = path.join('.changeset', 'config.json');
-
   const { input, flags, showHelp, showVersion } = meow(
     `
     Usage
@@ -30,6 +29,7 @@ export const init = async (): Promise<ChangesetConventionalCommits | undefined> 
     Options
       --dry               -d    Dry run, don't write any files/changesets
       --git-fetch [bool]  -g    Set 'false' to not run 'git fetch' to update local repo | Default: 'true'
+      --private [bool]    -p    Override Changesets' setting for private packages
       --verbosity [bool]  -v    Give verbose output - 'false' to suppress
       --help              -H    Show this help
       --version           -V    Show version
@@ -45,6 +45,10 @@ export const init = async (): Promise<ChangesetConventionalCommits | undefined> 
         gitFetch: {
           type: 'boolean',
           shortFlag: 'g',
+        },
+        private: {
+          type: 'boolean',
+          shortFlag: 'p',
         },
         verbosity: {
           type: 'boolean',
@@ -82,26 +86,60 @@ export const init = async (): Promise<ChangesetConventionalCommits | undefined> 
     return;
   }
 
-  const packages = getPackagesSync(cwd).packages.filter(
-    (pkg) => !pkg.packageJson.private && Boolean(pkg.packageJson.version),
-  );
-  const changesetConfig = JSON.parse(fs.readFileSync(path.join(cwd, CHANGESET_CONFIG_LOCATION)).toString());
-  const { baseBranch: branchBase = 'main' } = changesetConfig;
+  let packages = getPackagesSync(cwd).packages;
+
+  const configChangesets = await configReadChangesets(cwd, { tool: 'root', packages, root: packages[0] });
+
+  if (options.flags.private === undefined) {
+    packages = packages.filter((p) => isListablePackage(configChangesets, p.packageJson));
+
+    // Check if not all packages are disabled by Changesets' config
+    if (!packages.length) {
+      logger(log, ``, options);
+      logger(error, `No packages to process by Changesets' config`, options);
+      return;
+    }
+  } else if (!options.flags.private) {
+    packages = packages.filter((p) => !p.packageJson.private);
+
+    if (!packages.length) {
+      logger(log, ``, options);
+      logger(error, `No packages to process as all are private!`, options);
+      return;
+    }
+  }
+
+  const { baseBranch: branchBase = 'main' } = configChangesets;
   const branchCurrent = getCurrentBranch();
 
   logger(log, logHeader('Infos/Notes'), options);
 
-  if (options.flags.dry) {
-    logger(log, `   Dry run, not writing any files/changesets (--dry)`, options);
+  if (options.flags.private === true) {
+    logger(
+      log,
+      `   Generate changesets for private packages regardless of Changeses' settings for 'privatePackages' (--private)`,
+      options,
+    );
+  } else if (options.flags.private === false) {
+    logger(
+      log,
+      `   Not generating changesets for private packages regardless of Changeses' settings for 'privatePackages' (--private false)`,
+      options,
+    );
   }
 
   if (options.flags.gitFetch === false) {
     logger(log, `   Not running 'git fetch' to update local repo (--git-fetch false)`, options);
   }
 
+  if (options.flags.dry) {
+    logger(log, `   Dry run, not writing any files/changesets (--dry)`, options);
+  }
+
   return {
     branchBase,
     branchCurrent,
+    configChangesets,
     cwd,
     options,
     packages,
@@ -109,7 +147,24 @@ export const init = async (): Promise<ChangesetConventionalCommits | undefined> 
 };
 
 export const main = async (changesetConventionalCommits: ChangesetConventionalCommits) => {
-  const { branchBase, cwd, options } = changesetConventionalCommits;
+  const { branchBase, cwd, options, packages } = changesetConventionalCommits;
+
+  logger(log, logHeader('Package(s)'), options);
+  logger(
+    log,
+    packages.reduce(
+      (s, p, i) =>
+        s +
+        `   ` +
+        p.packageJson.name +
+        (p.packageJson.version ? ` - ${p.packageJson.version}` : '') +
+        (p.relativeDir !== '.' ? ` - '${p.relativeDir}'` : '') +
+        (p.packageJson.private ? ` - (private)` : '') +
+        (packages[i + 1] ? '\n' : ''),
+      '',
+    ),
+    options,
+  );
 
   const commitsSinceBase = getCommitsSinceRef(branchBase, options);
 
@@ -154,7 +209,6 @@ export const main = async (changesetConventionalCommits: ChangesetConventionalCo
       changelogMessagesWithAssociatedCommits.reduce(
         (s, c, i) =>
           s +
-          // DODO: Indicate number of truncated lines!
           '   ' +
           c.changelogMessage.split('\n', 1)[0].replace(/`/g, '') +
           '\n' +
