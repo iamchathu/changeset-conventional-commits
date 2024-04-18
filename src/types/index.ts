@@ -1,6 +1,10 @@
 import { Changeset, Config as ChangesetsConfig } from '@changesets/types';
 import { Package } from '@manypkg/get-packages';
 
+type Prettify<T> = {
+  [K in keyof T]: T[K];
+};
+
 export interface PkgJson {
   name?: string;
   version?: string;
@@ -66,13 +70,15 @@ export interface LogHeaderOptions {
   bold?: boolean;
 }
 
-export type ChangesetConventionalCommitsPackages = Changeset & {
+type _ChangesetConventionalCommitsPackages = Changeset & {
   packagesChanged: {
     dir: string;
     relativeDir: string;
     packageJson: PkgJson;
   }[];
 };
+
+export type ChangesetConventionalCommitsPackages = Prettify<_ChangesetConventionalCommitsPackages>;
 
 export interface CommitTypes {
   type: string;

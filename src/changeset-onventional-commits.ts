@@ -9,8 +9,8 @@ import { Package, getPackagesSync } from '@manypkg/get-packages';
 import meow from 'meow';
 import {
   associateCommitsToConventionalCommitMessages,
-  changesetsSummary,
   changesetsSummaryFirstLine,
+  changesetsSummary,
   configRead,
   conventionalMessagesWithCommitsToChangesets,
   difference,
@@ -100,7 +100,7 @@ export const init = async (): Promise<ChangesetConventionalCommits | undefined> 
 
   logger(log, logHeader('Changeset Conventional Commits', { newline: false, lead: false }), options);
 
-  const cwd: string = process.cwd();
+  const cwd: string = options.flags.pwd ?? process.cwd();
 
   if (!fs.existsSync(`${cwd}/.changeset/`)) {
     logger(log, ``, options);

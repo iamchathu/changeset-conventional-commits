@@ -2,7 +2,7 @@ import { execSync } from 'child_process';
 import path from 'path';
 import fs from 'fs-extra';
 import chalk from 'chalk';
-import { log } from '@changesets/logger';
+import { info, log } from '@changesets/logger';
 import type { Changeset, NewChangeset } from '@changesets/types';
 import type {
   ChangesetConventionalCommitsConfig as Config,
@@ -70,7 +70,7 @@ export const logger = <T>(logger: typeof log, m: T, options: MeowOptions) => {
 export const changesetsSummaryFirstLine = (cs: Changeset[]) => {
   // Take first line only and remove possible backticks for better readability
   return cs.reduce(
-    (s, c, i) => s + '   ' + c.summary.split('\n', 1)[0].replace(/`/g, '') + (cs[i + 1] ? '\n' : ''),
+    (s, c, i) => s + '   ' + c.summary.split('\n', 1)[0].replace(/(`|')/g, '') + (cs[i + 1] ? '\n' : ''),
     '',
   );
 };
@@ -80,7 +80,7 @@ export const changesetsSummary = (cs: NewChangeset[]) => {
   return cs.reduce(
     (s, c, i) =>
       s +
-      chalk.bold('   ' + c.summary.split('\n', 1)[0].replace(/`/g, '')) +
+      chalk.bold('   ' + c.summary.split('\n', 1)[0].replace(/(`|')/g, '')) +
       '\n' +
       `   ` +
       (c.id ? `${c.id}: ` : '') +
@@ -213,35 +213,76 @@ export const getCurrentBranch = () => {
 };
 
 // This could be running on the main branch or on a branch that was created from the main branch.
-// If this is running on the main branch, we want to get all commits since the last release.
-// If this is running on a branch that was created from the main branch, we want to get all commits since the branch was created.
+// If hash given, we get all commits since that hash.
+// If no hash given:
+//  - If this is running on the main branch, we want to get all commits since the last release.
+//  - If this is running on a branch that was created from the main branch, we want to get all commits since the branch was created.
 export const getCommitsSinceRef = (branch: string, options: MeowOptions) => {
   if (options.flags.gitFetch !== false) {
     gitFetch(branch);
   }
 
   const currentBranch = getCurrentBranch();
-  let sinceRef = `origin/${branch}`;
+  let sinceRef;
+
+  if (!options.flags.hash) {
+    // Get the real since branch created
+    // https://stackoverflow.com/questions/2255416/how-can-i-determine-when-a-git-branch-was-created
+    const refLogHashes = execSync(`git reflog show --pretty=format:"%h" ${currentBranch}`).toString().split('\n');
+
+    if (refLogHashes.length > 1) {
+      sinceRef = refLogHashes.pop();
+    } else {
+      // Fallback to latest diverge from master (commits not merged back)
+      sinceRef = `origin/${branch}`;
+    }
+  } else {
+    sinceRef = options.flags.hash;
+  }
+
   if (currentBranch === branch) {
     try {
-      sinceRef = execSync('git describe --tags --abbrev=0').toString();
+      if (!options.flags.hash) {
+        sinceRef = execSync('git describe --tags --abbrev=0').toString();
+      } else {
+        sinceRef = options.flags.hash;
+      }
     } catch (e) {
-      console.log(
+      logger(
+        log,
         "No git tags found, using repo's first commit for automated change detection. Note: this may take a while.",
+        options,
       );
       sinceRef = execSync('git rev-list --max-parents=0 HEAD').toString();
     }
   }
 
-  sinceRef = sinceRef.trim();
+  const flags = '';
+  // Not convinced `ancestry-path` should be used at all!? Wouldn't that miss out on merged in commits from other/temporary branches?!
+  // if (!options.flags.hash) {
+  //   flags = '--ancestry-path';
+  // }
 
-  return execSync(`git rev-list --ancestry-path ${sinceRef}...HEAD`).toString().split('\n').filter(Boolean).reverse();
+  const commits = execSync(`git rev-list ${flags} ${sinceRef}..HEAD`).toString().split('\n').filter(Boolean).reverse();
+
+  if (!options.flags.hash && currentBranch !== branch && !commits.length) {
+    logger(
+      info,
+      `No commits found - seems like branch is not diverged from 'origin/${branch}'!\nNOTE: Git doesn't feature a real "since branch created", so detecting this works only for commits not already in 'origin/$branch', but which at least is likely the "most deverged of" branch.\nTo force this behaviour, just provide a hash via '-h [hash]'.`,
+      options,
+    );
+  }
+
+  return commits;
 };
 
+// Take first line only and ignore possibly added backticks and apostrophes - e.g. added to commits or the changesets (but not both) for the changelog.
 const compareChangeSet = (a: Changeset, b: Changeset): boolean => {
-  return a.summary.replace(/\n$/, '') === b.summary && JSON.stringify(a.releases) == JSON.stringify(b.releases);
+  return (
+    a.summary.split('\n', 1)[0].replace(/(`|')/g, '') === b.summary.split('\n', 1)[0].replace(/(`|')/g, '') &&
+    JSON.stringify(a.releases) == JSON.stringify(b.releases)
+  );
 };
 
-export const difference = (a: Changeset[], b: Changeset[]): Changeset[] => {
-  return a.filter((changeA) => !b.some((changeB) => compareChangeSet(changeA, changeB)));
-};
+export const difference = (a: Changeset[], b: Changeset[]): Changeset[] =>
+  a.filter((changeA) => !b.some((changeB) => compareChangeSet(changeA, changeB)));
