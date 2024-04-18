@@ -16,8 +16,12 @@ Generate Changesets from Conventional Commits
   Options
     --dry               -d    Dry run, don't write any files/changesets
     --git-fetch [bool]  -g    Set 'false' to not run 'git fetch' to update local repo | Default: 'true'
+    --hash [hash]       -h    Process commits from after 'hash' instead of last tag/release
+    --info              -i    Output project info only
     --private [bool]    -p    Override Changesets' setting for private packages
-    --verbosity [bool   -v    Give verbose output - 'false' to suppress
+    --pwd [path]        -P    Path in which to execute
+    --root              -r    Process and generate changesets for root package
+    --verbosity [bool]  -v    Give verbose output - 'false' to suppress
     --help              -H    Show this help
     --version           -V    Show version
 ```
@@ -28,10 +32,10 @@ Generate Changesets from Conventional Commits
   <details>
     <summary>Details</summary>
 
-    Using `-dpg false` for `--dry`, `--private` and `--git-fetch false`
+    Using `-rg false -h 50bf163` for `--root`, `--git-fetch false` and given `--hash`
 
     ```sh
-    > changeset-conventional -dpg false
+    > changeset-conventional -rg false -h 50bf163
     ```
 
     outputs like:
@@ -41,13 +45,19 @@ Generate Changesets from Conventional Commits
 
     :: Infos/Notes
        Config '.changeset/config-conventional.json' found and loaded
-       Generate changesets for private packages regardless of Changeses' settings for 'privatePackages' (--private)
+       Being on branch 'testing'
+       Process commits from after '50bf163 (--hash)
+       Detected monorepo with workspaces - generating changesets for workspace packages (e.g. 'packages/*')
+       Generate changesets also for root package (--root)
        Not running 'git fetch' to update local repo (--git-fetch false)
-       Dry run, not writing any files/changesets (--dry)
+
+    :: Start at (after) Hash
+       50bf163 - 2024-03-21 (4 weeks ago) - github-actions[bot] - chore: version package (#30)
 
     :: Package(s)
        changeset-cc-test-01 - 0.0.0 - (private) - 'packages/test-01'
        changeset-cc-test-02 - 0.0.0 - (private) - 'packages/test-02'
+       changeset-conventional-commits - 0.2.5 - '.'
 
     :: Changelog Messages With Associated Commits
 
@@ -56,6 +66,9 @@ Generate Changesets from Conventional Commits
 
        feat: add cli helper, logging and flags --dry, --git-fetch and --verbose
        [4720e3be91f512ae79975c851fcf190a6eab6f92, 576677468d4308afaad42f2561d1b44a3c5648f1]
+
+       chore: add packages 'chalk' and 'meow'
+       [87cee64f78f21263dbe4985188d62c043a00073d]
 
        chore: monorepo packages added
        [7c16e6557a405ab09817543e24889433d86f689a]
@@ -67,21 +80,33 @@ Generate Changesets from Conventional Commits
        [3ad152c4e6d5fc7377545ede20cc52c44d38097a]
 
     :: Possible New Changesets
+       chore: update to ESM to use latest Meow
+       feat: add cli helper, logging and flags --dry, --git-fetch and --verbose
+       chore: add packages 'chalk' and 'meow'
        chore: monorepo packages added
        docs (changeset-cc-test-01): update 'README.md'
        docs (changeset-cc-test-02): update 'README.md'
 
     :: Existing Changesets
-       feat: add cli helper, logging and flags --dry, --git-fetch and --verbose
        chore: update to ESM to use latest Meow
+       feat: add cli helper, logging and flags --dry, --git-fetch and --verbose
 
     :: New Changesets
+
+       chore: add packages 'chalk' and 'meow'
+       strong-kitten-meow-hard: [changeset-conventional-commits]
+
        chore: monorepo packages added
+       ultimate-kitten-dominate: [changeset-cc-test-01, changeset-cc-test-02]
+
        docs (changeset-cc-test-01): update 'README.md'
+       lets-go-brandon: [changeset-cc-test-01]
+
        docs (changeset-cc-test-02): update 'README.md'
+       black-kitten-for-trumpets: [changeset-cc-test-02]
 
     :: Report and Result
-    info Dry run: 3 changesets would be generated
+    success 4 changesets generated
     ```
 
   </details>
@@ -127,6 +152,14 @@ This will generate changeset for each commit.
 
   Set 'false' to speed up the process by skipping `git fetch` - useful for quick iterations of testing and development.
 
+- `--hash` (`-h`)
+
+  Process commits from after `hash` instead of last `tag`/`release` or `branch creation/diverge` - e.g. for non-release tags or already merged back branches.
+
+- `--info` (`-i`)
+
+  Output only the info/notes about this project's `Changeset`/`Conventional Commits` generation using the given flags.
+
 - `--private` (`-p`)
 
   Generate (`true`) or not (`false`) changesets for private packages (`"private": true` set in `package.json`) regardless of settings for `"privatePackages"` in `.changesets/config.json`.
@@ -136,6 +169,18 @@ This will generate changeset for each commit.
   Changesets' default is to allow `private` packages:
 
   > `"privatePackages"` in `.changesets/config.json` has a default of `{ version: true, tag: false }` > https://github.com/changesets/changesets/blob/main/docs/versioning-apps.md
+
+- `--pwd` (`-P`)
+
+  Run in given path.
+
+- `--root` (`-r`)
+
+  Generate `changesets` for `root` package.
+
+  Yet to be supported/implemented within `Changesets` itself.
+
+  > [2023-04-18: Changesets for the monorepo root workspace (#1137)](https://github.com/changesets/changesets/issues/1137)
 
 - `--verbosity` (`-v`)
 

@@ -48,8 +48,12 @@ export interface MeowOptions {
   input: string[];
   flags: {
     dry: boolean | undefined;
+    hash: string | undefined;
+    info: boolean | undefined;
     gitFetch: boolean | undefined;
+    pwd: string | undefined;
     private: boolean | undefined;
+    root: boolean | undefined;
     verbosity: boolean | undefined;
     help: boolean | undefined;
     version: boolean | undefined;
@@ -88,4 +92,5 @@ export interface ChangesetConventionalCommits {
   ignoredFiles?: (string | RegExp)[];
   options: MeowOptions;
   packages: Package[];
+  rootPackage?: Package;
 }

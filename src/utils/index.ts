@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import { log } from '@changesets/logger';
-import type { Changeset } from '@changesets/types';
+import type { Changeset, NewChangeset } from '@changesets/types';
 import type {
   ChangesetConventionalCommitsConfig as Config,
   ChangesetConventionalCommits,
@@ -18,11 +18,7 @@ import type {
  * List of Commit Types from Conventional Commits/Changelog:
  * https://github.com/conventional-changelog/conventional-changelog/blob/master/packages/conventional-changelog-conventionalcommits/writer-opts.js
  * "section" is currently unused but is left in, with the intent to update changeset changelog generation once more fleshed out
- * DODO (2024-04-15): Section can go, this will just depend on 'type'.
  */
-// DODO (2024-04-15): Add and act on 'semver' (null, 'patch', 'minor'), because e.g. 'chore', 'examples', 'test', 'style' and 'ci'
-// should surely not ignite a release!
-// See [UnJS > Changelogen > 'config.ts'](https://github.com/unjs/changelogen/blob/main/src/config.ts)
 export const defaultCommitTypes: CommitTypes[] = [
   { type: 'feat', section: 'Features' },
   { type: 'feature', section: 'Features' },
@@ -76,6 +72,22 @@ export const changesetsSummaryFirstLine = (cs: Changeset[]) => {
   return cs.reduce(
     (s, c, i) => s + '   ' + c.summary.split('\n', 1)[0].replace(/`/g, '') + (cs[i + 1] ? '\n' : ''),
     '',
+  );
+};
+
+export const changesetsSummary = (cs: NewChangeset[]) => {
+  // Take first line only and remove possible backticks for better readability
+  return cs.reduce(
+    (s, c, i) =>
+      s +
+      chalk.bold('   ' + c.summary.split('\n', 1)[0].replace(/`/g, '')) +
+      '\n' +
+      `   ` +
+      (c.id ? `${c.id}: ` : '') +
+      `[` +
+      c.releases.reduce((rs, r, ri) => rs + r.name + (c.releases[ri + 1] ? ', ' : cs[i + 1] ? ']\n' : ']'), '') +
+      (cs[i + 1] ? '\n' : ''),
+    '\n',
   );
 };
 
@@ -150,34 +162,46 @@ export const conventionalMessagesWithCommitsToChangesets = (
   changesetConventionalCommits: ChangesetConventionalCommits,
 ) => {
   const { config, ignoredFiles = [], packages } = changesetConventionalCommits;
-  return conventionalMessagesToCommits
-    .map((entry) => {
-      const filesChanged = getFilesChangedSince({
-        from: entry.commitHashes[0],
-        to: entry.commitHashes[entry.commitHashes.length - 1],
-      }).filter((file) => {
-        return ignoredFiles.every((ignoredPattern) => !file.match(ignoredPattern));
-      });
-      const packagesChanged = packages.filter((pkg) => {
-        return filesChanged.some((file) => file.match(pkg.dir.replace(`${getRepoRoot()}/`, '')));
-      });
-      if (packagesChanged.length === 0) return null;
-      return {
-        releases: packagesChanged.map((pkg) => {
-          return {
-            name: pkg.packageJson.name,
-            type: isBreakingChange(entry.changelogMessage, config)
-              ? 'major'
-              : entry.changelogMessage.startsWith('feat')
-                ? 'minor'
-                : 'patch',
-          };
-        }),
-        summary: entry.changelogMessage,
-        packagesChanged,
-      };
-    })
-    .filter(Boolean) as Changeset[];
+
+  return (
+    conventionalMessagesToCommits
+      .map((entry) => {
+        let filesChanged = getFilesChangedSince({
+          from: entry.commitHashes[0],
+          to: entry.commitHashes[entry.commitHashes.length - 1],
+        }).filter((file) => {
+          return ignoredFiles.every((ignoredPattern) => !file.match(ignoredPattern));
+        });
+
+        const packagesChanged = packages.filter((pkg) => {
+          // We've to run through all files and remove matches, so they don't end up for the root-package (last).
+          return filesChanged.filter((file) => {
+            if (file.match(pkg.relativeDir)) {
+              filesChanged = filesChanged.filter((fileFilter) => !file.match(fileFilter));
+              return true;
+            }
+          }).length;
+        });
+
+        if (packagesChanged.length === 0) return null;
+
+        return {
+          releases: packagesChanged.map((pkg) => {
+            return {
+              name: pkg.packageJson.name,
+              type: isBreakingChange(entry.changelogMessage, config)
+                ? 'major'
+                : entry.changelogMessage.startsWith('feat')
+                  ? 'minor'
+                  : 'patch',
+            };
+          }),
+          summary: entry.changelogMessage,
+          packagesChanged,
+        };
+      })
+      .filter(Boolean) as Changeset[]
+  );
 };
 
 export const gitFetch = (branch: string) => {

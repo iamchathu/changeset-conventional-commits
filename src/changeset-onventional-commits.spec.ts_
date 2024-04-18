@@ -10,6 +10,7 @@ if (changesetConventionalCommits) {
   // changesetConventionalCommits.cwd = 'test/repos/';
   changesetConventionalCommits.options.flags.dry = true;
   changesetConventionalCommits.options.flags.noGitFetch = true;
+  changesetConventionalCommits.options.flags.root = true;
 } else {
   throw `Changeset Conventional Commits wasn't able to initialize!`;
 }
