@@ -1,6 +1,6 @@
-# changeset-conventional-commits
+# Changeset Conventional Commits
 
-Generate changesets based on the conventional commits.
+Generate `changesets` based on [Conventional Commits] to integrate with [Changesets].
 
 [![npm](https://img.shields.io/npm/v/changeset-conventional-commits.svg)](https://www.npmjs.com/package/changeset-conventional-commits)
 [![Known Vulnerabilities](https://snyk.io/test/github/iamchathu/changeset-conventional-commits/badge.svg)](https://snyk.io/test/github/iamchathu/changeset-conventional-commits)
@@ -27,6 +27,14 @@ Generate Changesets from Conventional Commits
 ```
 
 ## Features
+
+- 📦 Support for regular and `monorepos`
+
+- 🫚 `Changeset generation` for the root (`/`) package and its `commits`
+
+- 🎋 Detect being on `main branch` like `master` or a `branch` and handling it accordingly
+
+- 🕵🏻 Handle and generate `changesets` for `private packages`
 
 - 😻 Extensive logging/output
   <details>
@@ -111,7 +119,63 @@ Generate Changesets from Conventional Commits
 
   </details>
 
-## Use without adding as a dev dependancy
+## Why
+
+Benefit of both - the convenience of `Conventional Commits` with the `precise control` and `details` of [Changesets]! 🥳🎉
+
+- Don't neglect your lovely and well-treated `commits` and `changelog`, just commit away and fill in the details later.
+
+- Convincing your team to more detailed `changelogs`? Soft-introduce [Changesets] to a team used to `Conventional Commits`.
+
+- Separating documentation from developers? Great, just let your `docs team` handle combined `commits` and `changelogs` via `changesets` when working on documentation.
+
+- And probably a whole bunch more!
+
+Adaption of `Changesets` - getting it and its concept where it belongs, together with other features still in the pipe within their issues and MRs/PRs.
+
+## Limitations
+
+### Association with Commits
+
+Currently, generated `changesets` will be associated with the commit they'll come with, so `changelog` entries created by like `@changesets/changelog-github` will link the commit of the `changeset` instead of the ones they're created for.
+
+This will still be addressed by adding the actual originating commit hashes to the `changesets`, so `changelog generators` can associate them with the correct commits.
+
+As this will need support within the `changelog generator`, we're likely going to provide MRs/PRs to the existing ones and/or provide own ones.
+
+### Root Package Changesets
+
+`Changesets` for `root packages` are still to be supported/implemented within `Changesets` itself
+[2023-04-18: Changesets for the monorepo root workspace (#1137)](https://github.com/changesets/changesets/issues/1137)
+
+## Notes
+
+### Private Packages
+
+> `"private": true` set in `package.json`
+
+Changesets' default is to `allow` private packages: [Managing applications or non-npm packages](https://github.com/changesets/changesets/blob/main/docs/versioning-apps.md).
+
+According to Changesets' settings for `"privatePackages"` in `.changesets/config.json`, which has a default of `{ version: true, tag: false }`, where only `version: false` would exclude `private` packages.
+
+### Commits Detection
+
+If on `main`, like `master`, get commits since last `release`/`tag`.
+
+If on a `branch`, get commits since `"branch was created"` via local `reflog`, with fallback to when branch last diverged from `origin/${mainBranch}`.
+
+> As `Git` doesn't feature a real "since branch created" (no date of creation on branch info), the detection works only for locally created branches still within reflog (90 days by default), with a fallback detection when branch last diverged from master - its commits not already merged back into `origin/[master]`.
+> But you can always force the expected behaviour by providing a start after hash `-h [hash]`.
+
+### Heritage
+
+This package was initially created based on this [PR](https://github.com/willwill96/mono-repo-tools/pull/4/files) and there're issues[^conventional-commits-issues] created over at [Changesets][changesets issues] for this functionality and there're no updates on this yet. So I created this library till support is implemented.
+
+> E.g. 
+> - [2022-07-06: Streamline changeset generation with conventional commit support #862](https://github.com/changesets/changesets/issues/862)
+> - [2021-31-12: How to generate changelog by conventional commits? #727](https://github.com/changesets/changesets/issues/727).
+
+## Usage Without Installation
 
 - Using **pnpm**
 
@@ -137,10 +201,10 @@ pnpm add -g changeset-conventional-commits
 
 ## Usage
 
-1. Make sure the project is setup with changesets.
+1. Make sure the project is setup with [Changesets].
 2. Run `pnpm changeset-conventional` in the root.
 
-This will generate changeset for each commit.
+This will generate `changesets` for each commit.
 
 ## Options/Flags
 
@@ -166,10 +230,6 @@ This will generate changeset for each commit.
 
   E.g. `-p true` will always process private packages, whereby `-p false` will never.
 
-  Changesets' default is to allow `private` packages:
-
-  > `"privatePackages"` in `.changesets/config.json` has a default of `{ version: true, tag: false }` > https://github.com/changesets/changesets/blob/main/docs/versioning-apps.md
-
 - `--pwd` (`-P`)
 
   Run in given path.
@@ -177,10 +237,6 @@ This will generate changeset for each commit.
 - `--root` (`-r`)
 
   Generate `changesets` for `root` package.
-
-  Yet to be supported/implemented within `Changesets` itself.
-
-  > [2023-04-18: Changesets for the monorepo root workspace (#1137)](https://github.com/changesets/changesets/issues/1137)
 
 - `--verbosity` (`-v`)
 
@@ -218,12 +274,11 @@ This will generate changeset for each commit.
     { type: 'build', section: 'Build System' },
     { type: 'ci', section: 'Continuous Integration' },
     { type: 'devops', section: 'DevOps' },
-    { type: 'examples', section: 'Examples' },
   ];
   ```
 
-## Note
+<!-- urls -->
 
-This library is created based on this [PR](https://github.com/willwill96/mono-repo-tools/pull/4/files). There are issues created in changesets
-for this functionality and there is not update on this yet. So I created this
-library till that support is implemented.
+[changesets]: https://github.com/changesets/changesets/
+[changesets issues]: https://github.com/changesets/changesets/
+[conventional commits]: https://medium.com/neudesic-innovation/conventional-commits-a-better-way-78d6785c2e08
