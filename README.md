@@ -7,6 +7,8 @@ Generate `changesets` based on [Conventional Commits] to integrate with [Changes
 [![Code Climate](https://codeclimate.com/github/iamchathu/changeset-conventional-commits/badges/gpa.svg)](https://codeclimate.com/github/iamchathu/changeset-conventional-commits)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/iamchathu/changeset-conventional-commits/master/LICENSE)
 
+![Changeset Conventional Commits - CLI Output - Screenshot](assets/readme-header-horizontal.png)
+
 ```
 Generate Changesets from Conventional Commits
 
