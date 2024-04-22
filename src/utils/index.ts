@@ -204,8 +204,16 @@ export const conventionalMessagesWithCommitsToChangesets = (
   );
 };
 
-export const gitFetch = (branch: string) => {
-  execSync(`git fetch origin ${branch}`);
+export const gitFetch = (branch: string, options: MeowOptions) => {
+  logger(log, logHeader('Git Fetch'), options);
+
+  const message = execSync(`git fetch -v origin ${branch} 2>&1`).toString().trim().split('\n');
+
+  logger(
+    log,
+    message.reduce((s, m, i) => s + `   ` + m.trim() + (message[i + 1] ? '\n' : ''), ''),
+    options,
+  );
 };
 
 export const getCurrentBranch = () => {
@@ -219,7 +227,7 @@ export const getCurrentBranch = () => {
 //  - If this is running on a branch that was created from the main branch, we want to get all commits since the branch was created.
 export const getCommitsSinceRef = (branch: string, options: MeowOptions) => {
   if (options.flags.gitFetch !== false) {
-    gitFetch(branch);
+    gitFetch(branch, options);
   }
 
   const currentBranch = getCurrentBranch();

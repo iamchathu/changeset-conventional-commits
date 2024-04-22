@@ -209,7 +209,9 @@ export const init = async (): Promise<ChangesetConventionalCommits | undefined> 
   }
 
   if (options.flags.gitFetch === false) {
-    logger(log, `   Not running 'git fetch' to update local repo (--git-fetch false)`, options);
+    logger(log, `   Not running 'git fetch', not updating local repo (--git-fetch false)`, options);
+  } else {
+    logger(log, `   Running 'git fetch', updating local repo (default)`, options);
   }
 
   if (options.flags.dry) {

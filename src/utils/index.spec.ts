@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import { ChangesetConventionalCommitsPackages } from '../types/index.js';
+import { ChangesetConventionalCommitsPackages, MeowOptions } from '../types/index.js';
 import {
   associateCommitsToConventionalCommitMessages,
   configDefault,
@@ -9,6 +9,22 @@ import {
   isBreakingChange,
   isConventionalCommit,
 } from './index.js';
+
+const options: MeowOptions = {
+  input: [],
+  flags: {
+    dry: undefined,
+    hash: undefined,
+    info: undefined,
+    gitFetch: undefined,
+    pwd: undefined,
+    private: undefined,
+    root: undefined,
+    verbosity: false,
+    help: undefined,
+    version: undefined,
+  },
+};
 
 const config = configDefault();
 
@@ -298,6 +314,6 @@ describe('get-repo-root', () => {
 
 describe('git-fetch', () => {
   it('correctly fetches', () => {
-    expect(() => gitFetch('master')).not.toThrow();
+    expect(() => gitFetch('master', options)).not.toThrow();
   });
 });
