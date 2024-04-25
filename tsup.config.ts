@@ -6,10 +6,10 @@ export default defineConfig({
   platform: 'node',
   treeshake: true,
   splitting: false,
-  sourcemap: 'inline',
+  // sourcemap: 'inline',
   clean: true,
   bundle: false,
-  target: 'node16',
-  format: 'cjs',
+  target: 'es2022',
+  format: 'esm',
   tsconfig: 'tsconfig.build.json',
 });

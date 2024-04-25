@@ -1,26 +1,45 @@
 import { describe, expect, it } from '@jest/globals';
-import { ChangesetConventionalCommit } from '../types';
+import { ChangesetConventionalCommitsPackages, MeowOptions } from '../types/index.js';
 import {
   associateCommitsToConventionalCommitMessages,
+  configDefault,
   difference,
   getRepoRoot,
   gitFetch,
   isBreakingChange,
   isConventionalCommit,
-} from '../utils';
+} from './index.js';
+
+const options: MeowOptions = {
+  input: [],
+  flags: {
+    dry: undefined,
+    hash: undefined,
+    info: undefined,
+    gitFetch: undefined,
+    pwd: undefined,
+    private: undefined,
+    root: undefined,
+    verbosity: false,
+    help: undefined,
+    version: undefined,
+  },
+};
+
+const config = configDefault();
 
 describe('is-breaking', () => {
   it('correctly identifies a breaking change', () => {
-    expect(isBreakingChange('feat!: a change')).toEqual(true);
+    expect(isBreakingChange('feat!: a change', config)).toEqual(true);
   });
   it('correctly identifies a breaking change with a scope', () => {
-    expect(isBreakingChange('feat(scope)!: a change')).toEqual(true);
+    expect(isBreakingChange('feat(scope)!: a change', config)).toEqual(true);
   });
   it('correctly identifies a breaking change with all caps BREAKING CHANGE', () => {
-    expect(isBreakingChange('feat(scope): BREAKING CHANGE:')).toEqual(true);
+    expect(isBreakingChange('feat(scope): BREAKING CHANGE:', config)).toEqual(true);
   });
   it('correctly identifies a non-breaking change', () => {
-    expect(isBreakingChange('feat: a change')).toEqual(false);
+    expect(isBreakingChange('feat: a change', config)).toEqual(false);
   });
 });
 
@@ -29,6 +48,7 @@ describe('is-breaking-multiline', () => {
     expect(
       isBreakingChange(
         ['feat!: a change', 'First paragraph description.', 'Second paragraph description.'].join('\n\n'),
+        config,
       ),
     ).toEqual(true);
   });
@@ -36,14 +56,15 @@ describe('is-breaking-multiline', () => {
     expect(
       isBreakingChange(
         ['feat(scope)!: a change', 'First paragraph description.', 'Second paragraph description.'].join('\n\n'),
+        config,
       ),
     ).toEqual(true);
   });
   // @see https://www.conventionalcommits.org/en/v1.0.0/#specification
   it('correctly identifies a breaking change with all caps BREAKING CHANGE in message footer without body', () => {
-    expect(isBreakingChange(['feat(scope): a change', 'BREAKING CHANGE: vars now uppercase'].join('\n\n'))).toEqual(
-      true,
-    );
+    expect(
+      isBreakingChange(['feat(scope): a change', 'BREAKING CHANGE: vars now uppercase'].join('\n\n'), config),
+    ).toEqual(true);
   });
   it('correctly identifies a breaking change with all caps BREAKING CHANGE in message footer', () => {
     expect(
@@ -54,6 +75,7 @@ describe('is-breaking-multiline', () => {
           'Second paragraph description.',
           'BREAKING CHANGE: vars now uppercase',
         ].join('\n\n'),
+        config,
       ),
     ).toEqual(true);
   });
@@ -66,6 +88,7 @@ describe('is-breaking-multiline', () => {
           'Second paragraph description.',
           'Reviewed-by: ZZZ\nRefs: #123',
         ].join('\n\n'),
+        config,
       ),
     ).toEqual(false);
   });
@@ -76,12 +99,13 @@ describe('is-conventional-commit', () => {
     'correctly identifies a %s conventional commit',
     (type: string) => {
       it('with subject only', () => {
-        expect(isConventionalCommit(`${type}: a change`)).toEqual(true);
+        expect(isConventionalCommit(`${type}: a change`, config)).toEqual(true);
       });
       it('with subject and body', () => {
         expect(
           isConventionalCommit(
             [`${type}: a change`, 'First paragraph description.', 'Second paragraph description.'].join('\n\n'),
+            config,
           ),
         ).toEqual(true);
       });
@@ -94,29 +118,33 @@ describe('is-conventional-commit', () => {
               'Second paragraph description.',
               'Reviewed-by: ZZZ\nRefs: #123',
             ].join('\n\n'),
+            config,
           ),
         ).toEqual(true);
       });
     },
   );
   it('correctly identifies a non-conventional commit', () => {
-    expect(isConventionalCommit('a change')).toEqual(false);
+    expect(isConventionalCommit('a change', config)).toEqual(false);
   });
 });
 
 describe('associate-commits-to-conventional-commit-messages', () => {
   it('correctly associates commits to conventional commit messages when only the last commit is conventional', () => {
     expect(
-      associateCommitsToConventionalCommitMessages([
-        {
-          commitHash: 'hash1',
-          commitMessage: 'a change',
-        },
-        {
-          commitHash: 'hash2',
-          commitMessage: 'feat: a change',
-        },
-      ]),
+      associateCommitsToConventionalCommitMessages(
+        [
+          {
+            hash: 'hash1',
+            message: 'a change',
+          },
+          {
+            hash: 'hash2',
+            message: 'feat: a change',
+          },
+        ],
+        config,
+      ),
     ).toEqual([
       {
         changelogMessage: 'feat: a change',
@@ -126,16 +154,19 @@ describe('associate-commits-to-conventional-commit-messages', () => {
   });
   it('correctly associates commits to conventional commit messages when only the first commit is conventional', () => {
     expect(
-      associateCommitsToConventionalCommitMessages([
-        {
-          commitHash: 'hash1',
-          commitMessage: 'feat: a change',
-        },
-        {
-          commitHash: 'hash2',
-          commitMessage: 'a change',
-        },
-      ]),
+      associateCommitsToConventionalCommitMessages(
+        [
+          {
+            hash: 'hash1',
+            message: 'feat: a change',
+          },
+          {
+            hash: 'hash2',
+            message: 'a change',
+          },
+        ],
+        config,
+      ),
     ).toEqual([
       {
         changelogMessage: 'feat: a change',
@@ -145,20 +176,23 @@ describe('associate-commits-to-conventional-commit-messages', () => {
   });
   it('correctly associates commits to conventional commit messages when only the middle commit is conventional', () => {
     expect(
-      associateCommitsToConventionalCommitMessages([
-        {
-          commitHash: 'hash1',
-          commitMessage: 'a change',
-        },
-        {
-          commitHash: 'hash2',
-          commitMessage: 'feat: a change',
-        },
-        {
-          commitHash: 'hash3',
-          commitMessage: 'a change',
-        },
-      ]),
+      associateCommitsToConventionalCommitMessages(
+        [
+          {
+            hash: 'hash1',
+            message: 'a change',
+          },
+          {
+            hash: 'hash2',
+            message: 'feat: a change',
+          },
+          {
+            hash: 'hash3',
+            message: 'a change',
+          },
+        ],
+        config,
+      ),
     ).toEqual([
       {
         changelogMessage: 'feat: a change',
@@ -168,28 +202,31 @@ describe('associate-commits-to-conventional-commit-messages', () => {
   });
   it('correctly associates commits to conventional commit messages when there is a mix of conventional and non-conventional commits', () => {
     expect(
-      associateCommitsToConventionalCommitMessages([
-        {
-          commitHash: 'hash1',
-          commitMessage: 'a change',
-        },
-        {
-          commitHash: 'hash2',
-          commitMessage: 'feat: first change',
-        },
-        {
-          commitHash: 'hash3',
-          commitMessage: 'a change',
-        },
-        {
-          commitHash: 'hash4',
-          commitMessage: 'feat: second change',
-        },
-        {
-          commitHash: 'hash5',
-          commitMessage: 'a change',
-        },
-      ]),
+      associateCommitsToConventionalCommitMessages(
+        [
+          {
+            hash: 'hash1',
+            message: 'a change',
+          },
+          {
+            hash: 'hash2',
+            message: 'feat: first change',
+          },
+          {
+            hash: 'hash3',
+            message: 'a change',
+          },
+          {
+            hash: 'hash4',
+            message: 'feat: second change',
+          },
+          {
+            hash: 'hash5',
+            message: 'a change',
+          },
+        ],
+        config,
+      ),
     ).toEqual([
       {
         changelogMessage: 'feat: first change',
@@ -235,7 +272,7 @@ describe('difference', () => {
         },
       ],
     },
-  ] as ChangesetConventionalCommit[];
+  ] as ChangesetConventionalCommitsPackages[];
 
   const currentChangesets = [
     {
@@ -257,7 +294,7 @@ describe('difference', () => {
         },
       ],
     },
-  ] as ChangesetConventionalCommit[];
+  ] as ChangesetConventionalCommitsPackages[];
 
   it('correctly detects equal changesets *without* trailing new line/line break within `summary`', () => {
     expect(difference(changesets, currentChangesets)).toEqual([changesets[1]]);
@@ -277,6 +314,6 @@ describe('get-repo-root', () => {
 
 describe('git-fetch', () => {
   it('correctly fetches', () => {
-    expect(() => gitFetch('master')).not.toThrow();
+    expect(() => gitFetch('master', options)).not.toThrow();
   });
 });

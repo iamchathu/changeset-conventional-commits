@@ -1,4 +1,9 @@
-import { Changeset } from '@changesets/types';
+import { Changeset, Config as ChangesetsConfig } from '@changesets/types';
+import { Package } from '@manypkg/get-packages';
+
+type Prettify<T> = {
+  [K in keyof T]: T[K];
+};
 
 export interface PkgJson {
   name?: string;
@@ -33,10 +38,65 @@ export interface ManyPkgPackages {
   root: ManyPkgPackage;
 }
 
-export type ChangesetConventionalCommit = Changeset & {
+export interface Commit {
+  hash: string;
+  message: string;
+}
+
+export interface ConventionalMessagesToCommits {
+  changelogMessage: string;
+  commitHashes: string[];
+}
+
+export interface MeowOptions {
+  input: string[];
+  flags: {
+    dry: boolean | undefined;
+    hash: string | undefined;
+    info: boolean | undefined;
+    gitFetch: boolean | undefined;
+    pwd: string | undefined;
+    private: boolean | undefined;
+    root: boolean | undefined;
+    verbosity: boolean | undefined;
+    help: boolean | undefined;
+    version: boolean | undefined;
+  };
+}
+
+export interface LogHeaderOptions {
+  newline?: boolean;
+  lead?: boolean;
+  bold?: boolean;
+}
+
+type _ChangesetConventionalCommitsPackages = Changeset & {
   packagesChanged: {
     dir: string;
     relativeDir: string;
     packageJson: PkgJson;
   }[];
 };
+
+export type ChangesetConventionalCommitsPackages = Prettify<_ChangesetConventionalCommitsPackages>;
+
+export interface CommitTypes {
+  type: string;
+  section: string;
+}
+
+export interface ChangesetConventionalCommitsConfig {
+  commitTypes: CommitTypes[];
+}
+
+export interface ChangesetConventionalCommits {
+  branchBase: string;
+  branchCurrent: string;
+  config: ChangesetConventionalCommitsConfig;
+  configChangesets: ChangesetsConfig;
+  cwd: string;
+  ignoredFiles?: (string | RegExp)[];
+  options: MeowOptions;
+  packages: Package[];
+  rootPackage?: Package;
+}
