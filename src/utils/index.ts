@@ -12,6 +12,13 @@ interface ConventionalMessagesToCommits {
   commitHashes: string[];
 }
 
+export interface ReleaseRule {
+  breaking?: boolean;
+  revert?: boolean;
+  type?: string;
+  release: 'major' | 'minor' | 'patch' | undefined;
+}
+
 /*
  * Copied from conventional commits config:
  * https://github.com/conventional-changelog/conventional-changelog/blob/master/packages/conventional-changelog-conventionalcommits/writer-opts.js
@@ -32,12 +39,38 @@ const defaultCommitTypes = [
   { type: 'ci', section: 'Continuous Integration' },
 ];
 
+/*
+ * Based on rules of semantic-release:
+ * https://github.com/semantic-release/commit-analyzer/blob/master/lib/default-release-rules.js
+ *
+ */
+const defaultReleaseRules: ReleaseRule[] = [
+  { breaking: true as boolean, release: 'major' },
+  { revert: true as boolean, release: 'patch' },
+  { type: 'feat', release: 'minor' },
+  { type: 'feature', release: 'minor' },
+  { type: 'fix', release: 'patch' },
+  { type: 'perf', release: 'patch' },
+  { type: 'revert', release: 'patch' },
+  { type: 'docs', release: 'patch' },
+  { type: 'style', release: 'patch' },
+  { type: 'chore', release: 'patch' },
+  { type: 'refactor', release: 'patch' },
+  { type: 'test', release: 'patch' },
+  { type: 'build', release: 'patch' },
+  { type: 'ci', release: 'patch' },
+];
+
 export const isBreakingChange = (commit: string) => {
   return (
     commit.includes('BREAKING CHANGE:') ||
     // eslint-disable-next-line no-useless-escape
     defaultCommitTypes.some((commitType) => commit.match(new RegExp(`^${commitType.type}(?:\(.*\))?!:`)))
   );
+};
+
+export const isRevertChange = (commit: string) => {
+  return commit.startsWith('revert');
 };
 
 export const isConventionalCommit = (commit: string) => {
@@ -95,34 +128,81 @@ export const getRepoRoot = () => {
   return execSync('git rev-parse --show-toplevel').toString().trim().replace(/\n|\r/g, '');
 };
 
+export function filterFiles(files: string[], ignoredPatterns: (string | RegExp)[]): string[] {
+  return files.filter((file) => ignoredPatterns.every((pattern) => !file.match(pattern)));
+}
+
+export function getChangedPackages(filesChanged: string[], packages: ManyPkgPackage[]): ManyPkgPackage[] {
+  const repoRoot = getRepoRoot();
+  return packages.filter((pkg) => filesChanged.some((file) => file.match(pkg.dir.replace(`${repoRoot}/`, ''))));
+}
+
+function getCommitType(commitMessage: string) {
+  const match = commitMessage.match(/^(\w+)(\(.+\))?(!)?:/);
+  if (match) {
+    return match[1];
+  }
+  return null;
+}
+
+type ReturnType = 'major' | 'minor' | 'patch' | undefined;
+function determineReleaseType(changelogMessage: string, releaseRules = defaultReleaseRules): ReturnType {
+  const commitType = getCommitType(changelogMessage);
+
+  if (!commitType) {
+    return;
+  }
+
+  for (const rule of releaseRules) {
+    if (rule.breaking && isBreakingChange(changelogMessage)) {
+      return rule.release;
+    }
+    if (rule.revert && isRevertChange(changelogMessage)) {
+      return rule.release;
+    }
+
+    if (rule.type && rule.type === commitType) {
+      return rule.release;
+    }
+  }
+}
+
+interface ConventionalMessagesWithCommitsToChangesetsOptions {
+  ignoredFiles?: (string | RegExp)[];
+  packages: ManyPkgPackage[];
+  releaseRules?: ReleaseRule[];
+}
 export const conventionalMessagesWithCommitsToChangesets = (
   conventionalMessagesToCommits: ConventionalMessagesToCommits[],
-  options: { ignoredFiles?: (string | RegExp)[]; packages: ManyPkgPackage[] },
-) => {
-  const { ignoredFiles = [], packages } = options;
+  options: ConventionalMessagesWithCommitsToChangesetsOptions,
+): Changeset[] => {
+  const { ignoredFiles = [], packages, releaseRules } = options;
+
   return conventionalMessagesToCommits
     .map((entry) => {
-      const filesChanged = getFilesChangedSince({
-        from: entry.commitHashes[0],
-        to: entry.commitHashes[entry.commitHashes.length - 1],
-      }).filter((file) => {
-        return ignoredFiles.every((ignoredPattern) => !file.match(ignoredPattern));
-      });
-      const packagesChanged = packages.filter((pkg) => {
-        return filesChanged.some((file) => file.match(pkg.dir.replace(`${getRepoRoot()}/`, '')));
-      });
-      if (packagesChanged.length === 0) return null;
-      return {
-        releases: packagesChanged.map((pkg) => {
-          return {
-            name: pkg.packageJson.name,
-            type: isBreakingChange(entry.changelogMessage)
-              ? 'major'
-              : entry.changelogMessage.startsWith('feat')
-                ? 'minor'
-                : 'patch',
-          };
+      const filesChanged = filterFiles(
+        getFilesChangedSince({
+          from: entry.commitHashes[0],
+          to: entry.commitHashes[entry.commitHashes.length - 1],
         }),
+        ignoredFiles,
+      );
+
+      const packagesChanged = getChangedPackages(filesChanged, packages);
+
+      if (packagesChanged.length === 0) return null;
+
+      const releaseType = determineReleaseType(entry.changelogMessage, releaseRules);
+
+      if (!releaseType) return null;
+
+      const releases = packagesChanged.map((pkg) => ({
+        name: pkg.packageJson.name,
+        type: releaseType,
+      }));
+
+      return {
+        releases,
         summary: entry.changelogMessage,
         packagesChanged,
       };

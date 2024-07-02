@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "allOf": [
+    {
+      "$ref": "https://unpkg.com/@changesets/config@2.3.1/schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "conventionalCommits": {
+          "type": "object",
+          "properties": {
+            "releaseRules": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "breaking": {
+                    "type": "boolean"
+                  },
+                  "revert": {
+                    "type": "boolean"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "release": {
+                    "type": "string",
+                    "enum": ["major", "minor", "patch", null]
+                  }
+                },
+                "required": ["release"]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

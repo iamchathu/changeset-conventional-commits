@@ -1,5 +1,6 @@
 #! /usr/bin/env node
 import readChangeset from '@changesets/read';
+import { Config } from '@changesets/types';
 import writeChangeset from '@changesets/write';
 import { getPackagesSync } from '@manypkg/get-packages';
 import { execSync } from 'child_process';
@@ -10,7 +11,14 @@ import {
   conventionalMessagesWithCommitsToChangesets,
   difference,
   getCommitsSinceRef,
+  type ReleaseRule,
 } from './utils';
+
+interface ChangesetConventionalConfig extends Config {
+  conventionalCommits?: {
+    releaseRules?: ReleaseRule[];
+  };
+}
 
 const CHANGESET_CONFIG_LOCATION = path.join('.changeset', 'config.json');
 
@@ -22,7 +30,7 @@ const conventionalCommitChangeset = async (
     (pkg) => !pkg.packageJson.private && Boolean(pkg.packageJson.version),
   );
   const changesetConfig = JSON.parse(fs.readFileSync(path.join(cwd, CHANGESET_CONFIG_LOCATION)).toString());
-  const { baseBranch = 'main' } = changesetConfig;
+  const { baseBranch = 'main', conventionalCommits = {} } = changesetConfig as ChangesetConventionalConfig;
 
   const commitsSinceBase = getCommitsSinceRef(baseBranch);
 
@@ -36,6 +44,7 @@ const conventionalCommitChangeset = async (
   const changesets = conventionalMessagesWithCommitsToChangesets(changelogMessagesWithAssociatedCommits, {
     ignoredFiles: options.ignoredFiles,
     packages,
+    releaseRules: conventionalCommits?.releaseRules,
   });
 
   const currentChangesets = await readChangeset(cwd);
