@@ -14,6 +14,7 @@ const jestConfig: Config = {
   testEnvironment: 'node',
   collectCoverage: true,
   coverageReporters: ['text', 'cobertura'],
+  coverageDirectory: '../coverage',
 };
 
 export default jestConfig;

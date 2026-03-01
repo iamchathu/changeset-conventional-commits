@@ -1,6 +1,6 @@
 import type { Changeset } from '@changesets/types';
 import { execSync } from 'child_process';
-import type { ManyPkgPackage } from '../types';
+import type { ManyPkgPackage } from '../types/index.js';
 
 interface Commit {
   commitHash: string;
@@ -148,7 +148,7 @@ export const getCommitsSinceRef = (branch: string) => {
   if (currentBranch === branch) {
     try {
       sinceRef = execSync('git describe --tags --abbrev=0').toString();
-    } catch (e) {
+    } catch {
       console.log(
         "No git tags found, using repo's first commit for automated change detection. Note: this may take a while.",
       );
