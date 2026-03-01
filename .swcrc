@@ -1,17 +1,30 @@
 {
-  "$schema": "https://json.schemastore.org/swcrc",
+  "$schema": "https://swc.rs/schema.json",
   "sourceMaps": true,
+  "env": {
+    "targets": {
+      "node": "22"
+    }
+  },
   "jsc": {
     "parser": {
       "syntax": "typescript",
       "decorators": true,
-      "dynamicImport": true
+      "dynamicImport": true,
+      "tsx": false
     },
     "transform": {
       "legacyDecorator": true,
       "decoratorMetadata": true
     },
     "baseUrl": "./"
+  },
+  "module": {
+    "type": "es6",
+    "noInterop": false,
+    "strict": false,
+    "strictMode": true,
+    "lazy": false
   },
   "minify": false
 }
