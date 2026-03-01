@@ -1,5 +1,13 @@
 # changeset-conventional-commits
 
+## 1.0.0
+
+### Major Changes
+
+- [#43](https://github.com/iamchathu/changeset-conventional-commits/pull/43) [`78a729e`](https://github.com/iamchathu/changeset-conventional-commits/commit/78a729ef68e15212d29e32a48c522f12fc61fbb8) Thanks [@iamchathu](https://github.com/iamchathu)! - - Upgrade to ESM setup
+  - Update dependencies to the latest.
+  - Upgrade eslint to latest.
+
 ## 0.2.5
 
 ### Patch Changes
@@ -19,7 +27,7 @@
   [
     {
       releases: [[Object], [Object]],
-      summary: "chore(root): add two test packages\n",
+      summary: 'chore(root): add two test packages\n',
       packagesChanged: [[Object], [Object]],
     },
   ];
@@ -32,7 +40,7 @@
   [
     {
       releases: [[Object], [Object]],
-      summary: "chore(root): add two test packages",
+      summary: 'chore(root): add two test packages',
       packagesChanged: [[Object], [Object]],
     },
   ];
@@ -43,10 +51,7 @@
   ```ts
   const compareChangeSet = (a: Changeset, b: Changeset): boolean => {
     // return a.summary === b.summary && JSON.stringify(a.releases) == JSON.stringify(b.releases);
-    return (
-      a.summary.replace(/\n$/, "") === b.summary &&
-      JSON.stringify(a.releases) == JSON.stringify(b.releases)
-    );
+    return a.summary.replace(/\n$/, '') === b.summary && JSON.stringify(a.releases) == JSON.stringify(b.releases);
   };
   ```
 
