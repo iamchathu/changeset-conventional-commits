@@ -1,4 +1,4 @@
-import { Changeset } from '@changesets/types';
+import type { Changeset } from '@changesets/types';
 
 export interface PkgJson {
   name?: string;

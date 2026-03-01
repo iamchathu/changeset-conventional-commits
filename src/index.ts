@@ -10,7 +10,7 @@ import {
   conventionalMessagesWithCommitsToChangesets,
   difference,
   getCommitsSinceRef,
-} from './utils';
+} from './utils/index.js';
 
 const CHANGESET_CONFIG_LOCATION = path.join('.changeset', 'config.json');
 
