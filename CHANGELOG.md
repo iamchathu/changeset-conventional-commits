@@ -1,5 +1,11 @@
 # changeset-conventional-commits
 
+## 1.0.1
+
+### Patch Changes
+
+- [#45](https://github.com/iamchathu/changeset-conventional-commits/pull/45) [`5dd2be3`](https://github.com/iamchathu/changeset-conventional-commits/commit/5dd2be36cde0a33aa42425477c6928121f668ca3) Thanks [@iamchathu](https://github.com/iamchathu)! - Upgrade dependencies to the latest
+
 ## 1.0.0
 
 ### Major Changes
