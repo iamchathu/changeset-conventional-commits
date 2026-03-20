@@ -1,5 +1,11 @@
 # changeset-conventional-commits
 
+## 1.0.2
+
+### Patch Changes
+
+- [#47](https://github.com/iamchathu/changeset-conventional-commits/pull/47) [`aa6c376`](https://github.com/iamchathu/changeset-conventional-commits/commit/aa6c376841c47d31d79ee2cd50686a5b8652d86c) Thanks [@iamchathu](https://github.com/iamchathu)! - Upgrade dev dependencies
+
 ## 1.0.1
 
 ### Patch Changes
