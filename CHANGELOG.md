@@ -1,5 +1,11 @@
 # changeset-conventional-commits
 
+## 1.0.3
+
+### Patch Changes
+
+- [#49](https://github.com/iamchathu/changeset-conventional-commits/pull/49) [`bc9e598`](https://github.com/iamchathu/changeset-conventional-commits/commit/bc9e598c05466e2e63f0f475deceefae2c9ff545) Thanks [@iamchathu](https://github.com/iamchathu)! - Upgrade eslint and replace ts-node-dev with ts-node
+
 ## 1.0.2
 
 ### Patch Changes
