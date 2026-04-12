@@ -6,6 +6,8 @@ on:
   pull_request:
     branches: ['master']
 
+permissions: {}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -19,6 +21,8 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Install PNPM
         uses: pnpm/action-setup@v4
